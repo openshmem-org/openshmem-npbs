@@ -61,6 +61,7 @@ c   not affect the results.
       include 'mpinpb.h'
       include 'mpp/shmem.fh'
 
+      integer num_pes, my_pe
       double precision Mops, epsilon, a, s, t1, t2, t3, t4, x1, 
      >                 x2, q, x,  an, tt, gc, dum(3),
      >                 timer_read

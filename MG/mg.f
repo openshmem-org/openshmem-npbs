@@ -61,6 +61,7 @@ c k is the current level. It is passed down through subroutine args
 c and is NOT global. it is the current iteration
 c---------------------------------------------------------------------------c
 
+      integer num_pes, my_pe
       integer k, it
       
       external timer_read
