@@ -354,6 +354,8 @@ c---------------------------------------------------------------------
       include 'mpp/shmem.fh'
       include 'global.h'
 
+	  integer num_pes,my_pe
+
       integer ierr, i, j, fstatus
       integer, save :: temp
       integer, dimension(SHMEM_BCAST_SYNC_SIZE), save :: psync
