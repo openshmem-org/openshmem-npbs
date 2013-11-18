@@ -624,6 +624,7 @@ c---------------------------------------------------------------------
 
       include 'mpinpb.h'
       include 'mpp/shmem.fh'
+	  integer num_pes, my_pe
 
       integer   ierr
 
