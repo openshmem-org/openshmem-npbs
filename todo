@@ -1,0 +1,19 @@
+move Fortran/DT to C/DT, need to modify C/common/setparams.c
+move Fortran/IS to C/IS, need to modify C/common/setparams.c
+
+
+Current Repo Status:
+
+Bench	Lang		Libr	Develop
+BT		Fortran		shmem	CompileError npbrma.f
+CG		Fortran		shmem	OK
+DT		C			shmem	Under Wrong Directory, need tweek setparams.c
+EP		Fortran&C	shmem	OK
+FT		Fortran		shmem	OK
+IS		C			shmem	Under Wrong Directory, need tweek setparams.c
+LU		Fortran		mpi		Transform to openshmem
+MG		Fortran		shmem	OK
+SP		Fortran		shmem	CompileError npbrma.f
+UA		Empty		Empty	Create repo, transform from serial version to shmem paralle.
+
+
