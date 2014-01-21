@@ -1,71 +1,38 @@
-!-------------------------------------------------------------------------!
-!                                                                         !
-!        N  A  S     P A R A L L E L     B E N C H M A R K S  3.2         !
-!                                                                         !
-!                                   F T                                   !
-!                                                                         !
-!-------------------------------------------------------------------------!
-!                                                                         !
-!    This benchmark is part of the NAS Parallel Benchmark 3.2 suite.      !
-!    It is described in NAS Technical Reports 95-020 and 02-007           !
-!                                                                         !
-!    Permission to use, copy, distribute and modify this software         !
-!    for any purpose with or without fee is hereby granted.  We           !
-!    request, however, that all derived work reference the NAS            !
-!    Parallel Benchmarks 3.2. This software is provided "as is"           !
-!    without express or implied warranty.                                 !
-!                                                                         !
-!    Information on NPB 3.2, including the technical report, the          !
-!    original specifications, source code, results and information        !
-!    on how to submit new results, is available at:                       !
-!                                                                         !
-!           http://www.nas.nasa.gov/Software/NPB/                         !
-!                                                                         !
-!    Send comments or suggestions to  npb@nas.nasa.gov                    !
-!                                                                         !
-!          NAS Parallel Benchmarks Group                                  !
-!          NASA Ames Research Center                                      !
-!          Mail Stop: T27A-1                                              !
-!          Moffett Field, CA   94035-1000                                 !
-!                                                                         !
-!          E-mail:  npb@nas.nasa.gov                                      !
-!          Fax:     (650) 604-3957                                        !
-!                                                                         !
-!-------------------------------------------------------------------------!
+c  Copyright (c) 2011 - 2014
+c    University of Houston System and Oak Ridge National Laboratory.
+c  
+c  All rights reserved.
+c  
+c  Redistribution and use in source and binary forms, with or without
+c  modification, are permitted provided that the following conditions
+c  are met:
+c  
+c  o Redistributions of source code must retain the above copyright notice,
+c    this list of conditions and the following disclaimer.
+c  
+c  o Redistributions in binary form must reproduce the above copyright
+c    notice, this list of conditions and the following disclaimer in the
+c    documentation and/or other materials provided with the distribution.
+c  
+c  o Neither the name of the University of Houston System, Oak Ridge
+c    National Laboratory nor the names of its contributors may be used to
+c    endorse or promote products derived from this software without specific
+c    prior written permission.
+c  
+c  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+c  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+c  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+c  A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+c  HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+c  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED
+c  TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+c  PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+c  LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+c  NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+c  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+c  
 
-!TO REDUCE THE AMOUNT OF MEMORY REQUIRED BY THE BENCHMARK WE NO LONGER
-!STORE THE ENTIRE TIME EVOLUTION ARRAY "EX" FOR ALL TIME STEPS, BUT
-!JUST FOR THE FIRST. ALSO, IT IS STORED ONLY FOR THE PART OF THE GRID
-!FOR WHICH THE CALLING PROCESSOR IS RESPONSIBLE, SO THAT THE MEMORY 
-!USAGE BECOMES SCALABLE. THIS NEW ARRAY IS CALLED "TWIDDLE" (SEE
-!NPB3.0-SER)
 
-!TO AVOID PROBLEMS WITH VERY LARGE ARRAY SIZES THAT ARE COMPUTED BY
-!MULTIPLYING GRID DIMENSIONS (CAUSING INTEGER OVERFLOW IN THE VARIABLE
-!NTOTAL) AND SUBSEQUENTLY DIVIDING BY THE NUMBER OF PROCESSORS, WE
-!COMPUTE THE SIZE OF ARRAY PARTITIONS MORE CONSERVATIVELY AS
-!((NX*NY)/NP)*NZ, WHERE NX, NY, AND NZ ARE GRID DIMENSIONS AND NP IS
-!THE NUMBER OF PROCESSORS, THE RESULT IS STORED IN "NTDIVNP". FOR THE 
-!PERFORMANCE CALCULATION WE STORE THE TOTAL NUMBER OF GRID POINTS IN A 
-!FLOATING POINT NUMBER "NTOTAL_F" INSTEAD OF AN INTEGER.
-!THIS FIX WILL FAIL IF THE NUMBER OF PROCESSORS IS SMALL.
-
-!UGLY HACK OF SUBROUTINE IPOW46: FOR VERY LARGE GRIDS THE SINGLE EXPONENT
-!FROM NPB2.3 MAY NOT FIT IN A 32-BIT INTEGER. HOWEVER, WE KNOW THAT THE
-!"EXPONENT" ARGUMENT OF THIS ROUTINE CAN ALWAYS BE FACTORED INTO A TERM 
-!DIVISIBLE BY NX (EXP_1) AND ANOTHER TERM (EXP_2). NX IS USUALLY A POWER
-!OF TWO, SO WE CAN KEEP HALVING IT UNTIL THE PRODUCT OF EXP_1
-!AND EXP_2 IS SMALL ENOUGH (NAMELY EXP_2 ITSELF). THIS UPDATED VERSION
-!OF IPWO46, WHICH NOW TAKES THE TWO FACTORS OF "EXPONENT" AS SEPARATE
-!ARGUMENTS, MAY BREAK DOWN IF EXP_1 DOES NOT CONTAIN A LARGE POWER OF TWO.
-
-c---------------------------------------------------------------------
-c
-c Authors: D. Bailey
-c          W. Saphir
-c          R. F. Van der Wijngaart
-c
-c---------------------------------------------------------------------
 
 c---------------------------------------------------------------------
 

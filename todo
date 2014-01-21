@@ -1,5 +1,6 @@
 move Fortran/DT to C/DT, need to modify C/common/setparams.c
 move Fortran/IS to C/IS, need to modify C/common/setparams.c
+check with the .mpi files, remove them if they are unnecessary.
 
 
 Current Repo Status:
