@@ -74,7 +74,7 @@ c      double precision sx, sy, tm
      >           a = 1220703125.d0, s = 271828183.d0)
       common/storage/ x(2*nk), q(0:nq-1), qq(10000)
       data             dum /1.d0, 1.d0, 1.d0/
-      integer, dimension(SHMEM_BCAST_SYNC_SIZE), save :: psync
+      integer, dimension(SHMEM_REDUCE_SYNC_SIZE), save :: psync
       double precision, dimension(SHMEM_REDUCE_MIN_WRKDATA_SIZE),
      > save :: pwrk
 
@@ -242,17 +242,13 @@ c        vectorizable.
 
 
       call shmem_barrier_all();
-c      call mpi_allreduce(sx, x, 1, dp_type,
-c     >                   MPI_SUM, MPI_COMM_WORLD, ierr)
       call shmem_real8_sum_to_all(x,sx,1,0,0,no_nodes,pwrk,psync)
       sx = x(1)
-c      call mpi_allreduce(sy, x, 1, dp_type,
-c     >                   MPI_SUM, MPI_COMM_WORLD, ierr)
+
       call shmem_barrier_all();
       call shmem_real8_sum_to_all(x,sy,1,0,0,no_nodes,pwrk,psync)
       sy = x(1)
-c      call mpi_allreduce(q, x, nq, dp_type,
-c     >                   MPI_SUM, MPI_COMM_WORLD, ierr)
+
       call shmem_barrier_all();
       call shmem_real8_sum_to_all(x,q,nq,0,0,no_nodes,pwrk,psync)
 
