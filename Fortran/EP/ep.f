@@ -248,10 +248,12 @@ c     >                   MPI_SUM, MPI_COMM_WORLD, ierr)
       sx = x(1)
 c      call mpi_allreduce(sy, x, 1, dp_type,
 c     >                   MPI_SUM, MPI_COMM_WORLD, ierr)
+      call shmem_barrier_all();
       call shmem_real8_sum_to_all(x,sy,1,0,0,no_nodes,pwrk,psync)
       sy = x(1)
 c      call mpi_allreduce(q, x, nq, dp_type,
 c     >                   MPI_SUM, MPI_COMM_WORLD, ierr)
+      call shmem_barrier_all();
       call shmem_real8_sum_to_all(x,q,nq,0,0,no_nodes,pwrk,psync)
 
       do i = 1, nq
@@ -267,6 +269,8 @@ c     >                   MPI_SUM, MPI_COMM_WORLD, ierr)
 
 c      call mpi_allreduce(tm, x, 1, dp_type,
 c     >                   MPI_MAX, MPI_COMM_WORLD, ierr)
+
+      call shmem_barrier_all();
       call shmem_real8_max_to_all(x,tm,1,0,0,no_nodes,pwrk,psync)
       tm = x(1)
 
