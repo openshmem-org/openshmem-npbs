@@ -243,14 +243,17 @@ c        vectorizable.
 
       call shmem_barrier_all();
       call shmem_real8_sum_to_all(x,sx,1,0,0,no_nodes,pwrk,psync)
+      call shmem_barrier_all();
       sx = x(1)
 
       call shmem_barrier_all();
       call shmem_real8_sum_to_all(x,sy,1,0,0,no_nodes,pwrk,psync)
+      call shmem_barrier_all();
       sy = x(1)
 
       call shmem_barrier_all();
       call shmem_real8_sum_to_all(x,q,nq,0,0,no_nodes,pwrk,psync)
+      call shmem_barrier_all();
 
       do i = 1, nq
          q(i-1) = x(i)
@@ -268,6 +271,7 @@ c     >                   MPI_MAX, MPI_COMM_WORLD, ierr)
 
       call shmem_barrier_all();
       call shmem_real8_max_to_all(x,tm,1,0,0,no_nodes,pwrk,psync)
+      call shmem_barrier_all();
       tm = x(1)
 
       if (node.eq.root) then
