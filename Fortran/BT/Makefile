@@ -10,7 +10,7 @@ OBJS = bt.o make_set.o initialize.o exact_solution.o exact_rhs.o \
        set_constants.o adi.o define.o copy_faces.o rhs.o solve_subs.o \
        x_solve$(VEC).o y_solve$(VEC).o z_solve$(VEC).o add.o error.o \
        verify.o setup_rma.o npbrma.o \
-       ${COMMON}/print_results.o ${COMMON}/timers.o ${COMMON}/get_wtime.o
+       ${COMMON}/print_results.o ${COMMON}/timers.o #${COMMON}/get_wtime.o
 
 include ../sys/make.common
 
