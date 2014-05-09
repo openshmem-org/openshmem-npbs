@@ -55,10 +55,8 @@ c   not affect the results.
       double precision Mops, epsilon, a, s, t1, t2, t3, t4, x1, 
      >                 x2, q, x,  an, tt, gc, dum(3),
      >                 timer_read
-c      double precision sx, sy, tm
-      double precision, save::sx 
-      double precision, save::sy 
-      double precision, save::tm 
+      double precision sx, sy, tm
+      save             sx, sy, tm
       double precision sx_verify_value, sy_verify_value, sx_err, sy_err
       integer          mk, mm, nn, nk, nq, np, ierr, node, no_nodes, 
      >                 i, ik, kk, l, k, nit, ierrcode, no_large_nodes,
@@ -74,9 +72,9 @@ c      double precision sx, sy, tm
      >           a = 1220703125.d0, s = 271828183.d0)
       common/storage/ x(2*nk), q(0:nq-1), qq(10000)
       data             dum /1.d0, 1.d0, 1.d0/
-      integer, dimension(SHMEM_REDUCE_SYNC_SIZE), save :: psync
-      double precision, dimension(SHMEM_REDUCE_MIN_WRKDATA_SIZE),
-     > save :: pwrk
+      integer psync(SHMEM_BCAST_SYNC_SIZE)
+      double precision pwrk(SHMEM_REDUCE_MIN_WRKDATA_SIZE)
+      save psync, pwrk
 
 c      call mpi_init(ierr)
 c      call mpi_comm_rank(MPI_COMM_WORLD,node,ierr)
