@@ -162,9 +162,9 @@ INT_TYPE *key_buff_ptr_global,         /* used by full_verify to get */
 
 int      passed_verification;
                                  
-long pSync[_SHMEM_BCAST_SYNC_SIZE];
-double pWrk[_SHMEM_REDUCE_SYNC_SIZE];
-int ipWrk[_SHMEM_REDUCE_SYNC_SIZE];
+long pSync[_SHMEM_REDUCE_SYNC_SIZE];
+double pWrk[_SHMEM_REDUCE_MIN_WRKDATA_SIZE];
+int ipWrk[_SHMEM_REDUCE_MIN_WRKDATA_SIZE];
 
 
 /************************************/
