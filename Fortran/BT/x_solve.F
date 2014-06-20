@@ -167,11 +167,8 @@ c---------------------------------------------------------------------
 c---------------------------------------------------------------------
 c     pack up buffer
 c---------------------------------------------------------------------
-#ifdef USE_BARRIER
       ptr = buffoff(buff_id)
-#else
-      ptr = buffoff(1)
-#endif
+      
       do k=0,KMAX-1
          do j=0,JMAX-1
             do m=1,BLOCK_SIZE
@@ -192,13 +189,10 @@ c---------------------------------------------------------------------
 c---------------------------------------------------------------------
 c     send buffer 
 c---------------------------------------------------------------------
-#ifdef USE_BARRIER
 c      call mpi_win_fence(MPI_MODE_NOPUT+MPI_MODE_NOPRECEDE, win, error)
 c      X-1
 c      call shmem_barrier_all()
-#else
-      call mpi_win_post(succ_group(1), MPI_MODE_NOPUT, win, error)
-#endif
+
       if (timeron) call timer_stop(t_xcomm)
 
       return
@@ -224,11 +218,8 @@ c---------------------------------------------------------------------
 c     Send element 0 to previous processor
 c---------------------------------------------------------------------
       istart = 0
-#ifdef USE_BARRIER
       ptr = buffoff(buff_id)
-#else
-      ptr = buffoff(1)
-#endif
+
       do k=0,KMAX-1
          do j=0,JMAX-1
             do n=1,BLOCK_SIZE
@@ -238,13 +229,10 @@ c---------------------------------------------------------------------
             ptr = ptr+BLOCK_SIZE
          enddo
       enddo
-#ifdef USE_BARRIER
+
 c      X-1
 c      call mpi_win_fence(MPI_MODE_NOPUT+MPI_MODE_NOPRECEDE, win, error)
 c      call shmem_barrier_all()
-#else
-      call mpi_win_post(pred_group(1), MPI_MODE_NOPUT, win, error)
-#endif
       if (timeron) call timer_stop(t_xcomm)
 
       return
@@ -293,13 +281,8 @@ c---------------------------------------------------------------------
 
       integer c,buffer_size,p0,error,i
       buffer_size=MAX_CELL_DIM*MAX_CELL_DIM*BLOCK_SIZE
-#ifdef USE_BARRIER
       p0 = buffoff(buff_id)
       buff_id = 3 - buff_id
-#else
-      p0 = buffoff(1)
-      call mpi_win_start(succ_group(1), 0, win, error)
-#endif
       disp = p0
 c      X-1
 c      call mpi_get(in_buffer, buffer_size, dp_type, 
@@ -308,14 +291,9 @@ c     >   successor(1), disp, buffer_size, dp_type, win, error)
       call shmem_double_get(in_buffer,
      >   out_buffer(disp+1), buffer_size, successor(1))
 
-#ifdef USE_BARRIER
 c      X-1
 c      call mpi_win_fence(MPI_MODE_NOSUCCEED, win, error)
 c      call shmem_barrier_all()
-#else
-      call mpi_win_complete(win, error)
-      call mpi_win_wait(win, error)
-#endif
 c      print *,"Process",node,(in_buffer(i),i=1,5)
 c      call exit(0)
 
@@ -338,13 +316,8 @@ c---------------------------------------------------------------------
       integer c,buffer_size,p0,error
       buffer_size=MAX_CELL_DIM*MAX_CELL_DIM*
      >     (BLOCK_SIZE*BLOCK_SIZE + BLOCK_SIZE)
-#ifdef USE_BARRIER
       p0 = buffoff(buff_id)
       buff_id = 3 - buff_id
-#else
-      p0 = buffoff(1)
-      call mpi_win_start(pred_group(1), 0, win, error)
-#endif
       disp = p0
 c      X-1
 c      call mpi_get(in_buffer, buffer_size, dp_type, 
@@ -352,14 +325,9 @@ c     >   predecessor(1), disp, buffer_size, dp_type, win, error)
       call shmem_barrier_all()
       call shmem_double_get(in_buffer,
      >   out_buffer(disp+1), buffer_size, predecessor(1))
-#ifdef USE_BARRIER
 c      X-1
 c      call mpi_win_fence(MPI_MODE_NOSUCCEED, win, error)
 c      call shmem_barrier_all()
-#else
-      call mpi_win_complete(win, error)
-      call mpi_win_wait(win, error)
-#endif
 
       return
       end
