@@ -26,10 +26,6 @@ FT: ft
 ft: header
 	cd FT; $(MAKE) NPROCS=$(NPROCS) CLASS=$(CLASS)
 
-IS: is
-is: header
-	cd IS; $(MAKE) NPROCS=$(NPROCS) CLASS=$(CLASS)
-
 CG: cg
 cg: header
 	cd CG; $(MAKE) NPROCS=$(NPROCS) CLASS=$(CLASS)
@@ -37,10 +33,6 @@ cg: header
 EP: ep
 ep: header
 	cd EP; $(MAKE) NPROCS=$(NPROCS) CLASS=$(CLASS)
-
-DT: dt
-dt: header
-	cd DT; $(MAKE) CLASS=$(CLASS)
 
 # Awk script courtesy cmg@cray.com, modified by Haoqiang Jin
 suite:
@@ -59,8 +51,8 @@ clean:
 
 veryclean: clean
 	- rm -f config/make.def config/suite.def 
-	- rm -f bin/sp.* bin/lu.* bin/mg.* bin/ft.* bin/bt.* bin/is.* 
-	- rm -f bin/ep.* bin/cg.* bin/dt.*
+	- rm -f bin/sp.* bin/lu.* bin/mg.* bin/ft.* bin/bt.*  
+	- rm -f bin/ep.* bin/cg.* 
 
 header:
 	@ sys/print_header
