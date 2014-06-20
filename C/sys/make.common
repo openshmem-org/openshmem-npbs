@@ -1,5 +1,6 @@
-PROGRAM  = $(BINDIR)/$(BENCHMARK).$(CLASS).x
-CCOMPILE = $(CC)  -c $(C_INC) $(CFLAGS)
+PROGRAM  = $(BINDIR)/$(BENCHMARK).$(CLASS).$(NPROCS)
+FCOMPILE = $(MPIF77) -c $(FMPI_INC) $(FFLAGS)
+CCOMPILE = $(MPICC)  -c $(CMPI_INC) $(CFLAGS)
 
 # Class "U" is used internally by the setparams program to mean
 # "unknown". This means that if you don't specify CLASS=
@@ -7,6 +8,7 @@ CCOMPILE = $(CC)  -c $(C_INC) $(CFLAGS)
 # to be able to avoid this, but we'd have to get information
 # from the setparams back to the make program, which isn't easy. 
 CLASS=U
+NPROCS=1
 
 default:: ${PROGRAM}
 
@@ -17,42 +19,33 @@ default:: ${PROGRAM}
 # If you create a file called "config" you will break things. 
 config:
 	@cd ../sys; ${MAKE} all
-	../sys/setparams ${BENCHMARK} ${CLASS}
+	../sys/setparams ${BENCHMARK} ${NPROCS} ${CLASS} ${SUBTYPE}
 
 COMMON=../common
-${COMMON}/${RAND}.o: ${COMMON}/${RAND}.c ../config/make.def
-	cd ${COMMON}; ${CCOMPILE} ${RAND}.c
+${COMMON}/${RAND}.o: ${COMMON}/${RAND}.f
+	cd ${COMMON}; ${FCOMPILE} ${RAND}.f
+${COMMON}/c_randdp.o: ${COMMON}/randdp.c
+	cd ${COMMON}; ${CCOMPILE} -o c_randdp.o randdp.c
 
-${COMMON}/print_results.o: ${COMMON}/print_results.c ../config/make.def
-	cd ${COMMON}; ${CCOMPILE} print_results.c
+${COMMON}/print_results.o: ${COMMON}/print_results.f
+	cd ${COMMON}; ${FCOMPILE} print_results.f
 
-${COMMON}/c_print_results.o: ${COMMON}/c_print_results.c ../config/make.def
+${COMMON}/c_print_results.o: ${COMMON}/c_print_results.c
 	cd ${COMMON}; ${CCOMPILE} c_print_results.c
 
-${COMMON}/timers.o: ${COMMON}/timers.c ../config/make.def
-	cd ${COMMON}; ${CCOMPILE} timers.c
+${COMMON}/timers.o: ${COMMON}/timers.f
+	cd ${COMMON}; ${FCOMPILE} timers.f
 
-${COMMON}/c_timers.o: ${COMMON}/c_timers.c ../config/make.def
+${COMMON}/c_timers.o: ${COMMON}/c_timers.c
 	cd ${COMMON}; ${CCOMPILE} c_timers.c
 
-${COMMON}/wtime.o: ${COMMON}/${WTIME} ../config/make.def
-	cd ${COMMON}; ${CCOMPILE} ${MACHINE} -o wtime.o ${COMMON}/${WTIME}
-# For most machines or CRAY or IBM
-#	cd ${COMMON}; ${CCOMPILE} ${MACHINE} ${COMMON}/wtime.c
-# For a precise timer on an SGI Power Challenge, try:
-#	cd ${COMMON}; ${CCOMPILE} -o wtime.o ${COMMON}/wtime_sgi64.c
-
-${COMMON}/c_wtime.o: ${COMMON}/${WTIME} ../config/make.def
-	cd ${COMMON}; ${CCOMPILE} -o c_wtime.o ${COMMON}/${WTIME}
-
-
-# Normally setparams updates npbparams.h only if the settings (CLASS)
+# Normally setparams updates npbparams.h only if the settings (CLASS/NPROCS)
 # have changed. However, we also want to update if the compile options
 # may have changed (set in ../config/make.def). 
 npbparams.h: ../config/make.def
 	@ echo make.def modified. Rebuilding npbparams.h just in case
 	rm -f npbparams.h
-	../sys/setparams ${BENCHMARK} ${CLASS}
+	../sys/setparams ${BENCHMARK} ${NPROCS} ${CLASS} ${SUBTYPE}
 
 # So that "make benchmark-name" works
 ${BENCHMARK}:  default
