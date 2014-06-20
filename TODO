@@ -1,5 +1,5 @@
 check with the .mpi files, remove them if they are unnecessary.
-
+These benchmarks are tested for only CLASSES A, B and C
 Current Repo Status:
 
 Bench   Lang        Libr    Develop
