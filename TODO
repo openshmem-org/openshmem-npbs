@@ -4,15 +4,15 @@ check with the .mpi files, remove them if they are unnecessary.
 
 Current Repo Status:
 
-Bench	Lang		Libr	Develop
-CG		Fortran		shmem	OK
-EP		Fortran&C	shmem	OK
-FT		Fortran		shmem	Runtime error, crash before MPI_INIT, Under Wrong Directory, need tweek setparams.c
-MG		Fortran		shmem	OK
-BT		Fortran		shmem	CompileError npbrma.f
-SP		Fortran		shmem	CompileError npbrma.f
-IS		C			shmem	Under Wrong Directory, need tweek setparams.c
+Bench   Lang        Libr    Develop
+CG      Fortran     shmem   OK
+EP      Fortran&C   shmem   OK
+FT      Fortran     shmem   Runtime error, crash before MPI_INIT, Under Wrong Directory, need tweek setparams.c
+MG      Fortran     shmem   OK
+BT      Fortran     shmem   CompileError npbrma.f
+SP      Fortran     shmem   CompileError npbrma.f
+IS      C           shmem   Under Wrong Directory, need tweek setparams.c
 DT      C           shmem   Under Wrong Directory, need tweek setparams.c
-UA		Empty		Empty	Create repo, transform from serial version to shmem paralle.
-LU		Fortran		mpi		Transform to openshmem
+UA      Empty       Empty   Create repo, transform from serial version to shmem paralle.
+LU      Fortran     mpi     Transform to openshmem
 
