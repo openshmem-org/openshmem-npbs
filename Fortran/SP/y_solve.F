@@ -72,25 +72,16 @@ c            from the previous stage. They always come in pairs.
 c---------------------------------------------------------------------
              if (timeron) call timer_start(t_ycomm)
              nid = predecessor(2)
-#ifdef USE_BARRIER
       	     p0   = buffoff(buff_id)
       	     buff_id = 3 - buff_id
-#else
-             call mpi_win_start(pred_group(2), 0, win, error)
-#endif
              disp = p0
              call shmem_barrier_all()
 c             call mpi_get(in_buffer, 22*buffer_size, dp_type, 
 c     >          nid, disp, 22*buffer_size, dp_type, win, error)
              call shmem_double_get(in_buffer,
      >            out_buffer(disp+1), 22*buffer_size, nid)
-#ifdef USE_BARRIER
 c             call mpi_win_fence(MPI_MODE_NOSUCCEED, win, error)
 c             call shmem_barrier_all()
-#else
-             call mpi_win_complete(win, error)
-             call mpi_win_wait(win, error)
-#endif
              if (timeron) call timer_stop(t_ycomm)
 
 c---------------------------------------------------------------------
@@ -313,9 +304,7 @@ c            create a running pointer for the send buffer
 c---------------------------------------------------------------------
              if (timeron) call timer_start(t_ycomm)
              nid = successor(2)
-#ifdef USE_BARRIER
       	     p0   = buffoff(buff_id)
-#endif
              if (timeron) call timer_stop(t_ycomm)
              p = p0
              n = 0
@@ -350,13 +339,8 @@ c---------------------------------------------------------------------
 c            pack and send the buffer
 c---------------------------------------------------------------------
              if (timeron) call timer_start(t_ycomm)
-#ifdef USE_BARRIER
 c             call mpi_win_fence(MPI_MODE_NOPUT+MPI_MODE_NOPRECEDE, 
 c     &          win, error)
-#else
-             call mpi_win_post(succ_group(2), MPI_MODE_NOPUT, 
-     &          win, error)
-#endif
              if (timeron) call timer_stop(t_ycomm)
 
           endif
@@ -409,25 +393,16 @@ c            wait for pending communication to complete
 c---------------------------------------------------------------------
              if (timeron) call timer_start(t_ycomm)
              nid = successor(2)
-#ifdef USE_BARRIER
              p0   = buffoff(buff_id)
              buff_id = 3 - buff_id
-#else
-             call mpi_win_start(succ_group(2), 0, win, error)
-#endif
              disp = p0
 c             call mpi_get(in_buffer, 10*buffer_size, dp_type, 
 c     >          nid, disp, 10*buffer_size, dp_type, win, error)
              call shmem_barrier_all()
              call shmem_double_get(in_buffer,
      >            out_buffer(disp+1), 10*buffer_size, nid)
-#ifdef USE_BARRIER
 c             call mpi_win_fence(MPI_MODE_NOSUCCEED, win, error)
 c             call shmem_barrier_all()
-#else
-             call mpi_win_complete(win, error)
-             call mpi_win_wait(win, error)
-#endif
              if (timeron) call timer_stop(t_ycomm)
 
 c---------------------------------------------------------------------
@@ -551,9 +526,7 @@ c---------------------------------------------------------------------
              j1 = jstart + 1
              if (timeron) call timer_start(t_ycomm)
              nid = predecessor(2)
-#ifdef USE_BARRIER
              p0   = buffoff(buff_id)
-#endif
              if (timeron) call timer_stop(t_ycomm)
              p = p0
              do    m = 1, 5
@@ -571,13 +544,8 @@ c            pack and send the buffer
 c---------------------------------------------------------------------
 
              if (timeron) call timer_start(t_ycomm)
-#ifdef USE_BARRIER
 c             call mpi_win_fence(MPI_MODE_NOPUT+MPI_MODE_NOPRECEDE,
 c     &          win, error)
-#else
-             call mpi_win_post(pred_group(2), MPI_MODE_NOPUT,
-     &          win, error)
-#endif
              if (timeron) call timer_stop(t_ycomm)
 
           endif
