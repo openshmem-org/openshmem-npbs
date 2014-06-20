@@ -1,18 +1,18 @@
-move Fortran/DT to C/DT, need to modify C/common/setparams.c
-move Fortran/IS to C/IS, need to modify C/common/setparams.c
 check with the .mpi files, remove them if they are unnecessary.
 
 Current Repo Status:
 
 Bench   Lang        Libr    Develop
-CG      Fortran     shmem   OK
-EP      Fortran&C   shmem   OK
-FT      Fortran     shmem   Runtime error, crash before MPI_INIT, Under Wrong Directory, need tweek setparams.c
+CG      Fortran     shmem   Unsuccessful Results
+EP      Fortran     shmem   OK
+EP      C           shmem   CompileError undeclared variables
+FT      Fortran     shmem   Unsuccessful Results
 MG      Fortran     shmem   OK
-BT      Fortran     shmem   CompileError npbrma.f
-SP      Fortran     shmem   CompileError npbrma.f
-IS      C           shmem   Under Wrong Directory, need tweek setparams.c
-DT      C           shmem   Under Wrong Directory, need tweek setparams.c
-UA      Empty       Empty   Create repo, transform from serial version to shmem paralle.
+BT      Fortran     shmem   OK
+SP      Fortran     shmem   OK
+IS      C           shmem   OK
+DT      C           shmem   Segfault with Classes B and C
+UA      Empty       Empty   Create repo, transform from serial version to
+                            shmem parallel.
 LU      Fortran     mpi     Transform to openshmem
 
