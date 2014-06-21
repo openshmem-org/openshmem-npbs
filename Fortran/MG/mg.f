@@ -1,24 +1,24 @@
 c  Copyright (c) 2011 - 2014
 c    University of Houston System and Oak Ridge National Laboratory.
-c  
+c
 c  All rights reserved.
-c  
+c
 c  Redistribution and use in source and binary forms, with or without
 c  modification, are permitted provided that the following conditions
 c  are met:
-c  
+c
 c  o Redistributions of source code must retain the above copyright notice,
 c    this list of conditions and the following disclaimer.
-c  
+c
 c  o Redistributions in binary form must reproduce the above copyright
 c    notice, this list of conditions and the following disclaimer in the
 c    documentation and/or other materials provided with the distribution.
-c  
+c
 c  o Neither the name of the University of Houston System, Oak Ridge
 c    National Laboratory nor the names of its contributors may be used to
 c    endorse or promote products derived from this software without specific
 c    prior written permission.
-c  
+c
 c  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
 c  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
 c  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -30,7 +30,7 @@ c  PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
 c  LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
 c  NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 c  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-c  
+c
 
 
 
@@ -43,7 +43,6 @@ c---------------------------------------------------------------------
       include 'mpinpb.h'
       include 'globals.h'
       include 'mpp/shmem.fh'
-c      include 'new_global.h'
 
 c---------------------------------------------------------------------------c
 c k is the current level. It is passed down through subroutine args
@@ -82,14 +81,7 @@ c---------------------------------------------------------------------------c
      > save :: pwrk
       integer, dimension(SHMEM_BCAST_SYNC_SIZE), save :: psync1
       integer, dimension(SHMEM_BCAST_SYNC_SIZE), save :: psync2
-c      integer my_pe,num_pes
 
-c      call mpi_init(ierr)
-c      call mpi_comm_rank(mpi_comm_world, me, ierr)
-c      call mpi_comm_size(mpi_comm_world, nprocs, ierr)
-
-      flag3 = -1 
-      flag3_ex = -1 
       call start_pes(0)
       nprocs = num_pes()
       me = my_pe()
@@ -97,21 +89,14 @@ c      call mpi_comm_size(mpi_comm_world, nprocs, ierr)
       psync2 = SHMEM_SYNC_VALUE
 
       root = 0
-      if (.not. convertdouble) then
-         dp_type = MPI_DOUBLE_PRECISION
-      else
-         dp_type = MPI_REAL
-      endif
-
 
       call timer_clear(T_bench)
       call timer_clear(T_init)
 
-c      call mpi_barrier(MPI_COMM_WORLD, ierr)
-      call shmem_barrier_all() 
+      call shmem_barrier_all()
 
       call timer_start(T_init)
-      
+
 
 c---------------------------------------------------------------------
 c Read in and broadcast input data
@@ -142,13 +127,6 @@ c---------------------------------------------------------------------
          endif
       endif
 
-c      call mpi_bcast(lt, 1, MPI_INTEGER, 0, mpi_comm_world, ierr)
-c      call mpi_bcast(nit, 1, MPI_INTEGER, 0, mpi_comm_world, ierr)
-c      call mpi_bcast(nx(lt), 1, MPI_INTEGER, 0, mpi_comm_world, ierr)
-c      call mpi_bcast(ny(lt), 1, MPI_INTEGER, 0, mpi_comm_world, ierr)
-c      call mpi_bcast(nz(lt), 1, MPI_INTEGER, 0, mpi_comm_world, ierr)
-c      call mpi_bcast(debug_vec(0), 8, MPI_INTEGER, 0, 
-c     >               mpi_comm_world, ierr)
       call shmem_broadcast4(lt, lt, 1, 0, 0, 0, nprocs, psync1)
       call shmem_broadcast4(nit, nit, 1, 0, 0, 0, nprocs, psync2)
       call shmem_broadcast4(nx(lt), nx(lt), 1, 0, 0, 0, nprocs, psync1)
@@ -251,7 +229,6 @@ c---------------------------------------------------------------------
       call zero3(u,n1,n2,n3)
       call zran3(v,n1,n2,n3,nx(lt),ny(lt),k)
 
-c      call mpi_barrier(mpi_comm_world,ierr)
       call shmem_barrier_all()
 
       call timer_stop(T_init)
@@ -275,8 +252,6 @@ c      call mpi_barrier(mpi_comm_world,ierr)
       t0 = timer_read(T_bench)
       tinit = timer_read(T_init)
 
-c      call mpi_reduce(t0,t,1,dp_type,
-c     >     mpi_max,root,mpi_comm_world,ierr)
       call shmem_barrier_all()
       call shmem_real8_max_to_all(t,t0,1,0,0,nprocs,pwrk,psync1)
       call shmem_real8_sum_to_all(ttotal,t0,1,0,0,nprocs,pwrk,psync1)
@@ -352,7 +327,6 @@ c     >     mpi_max,root,mpi_comm_world,ierr)
       endif
  600  format( i4, 2e19.12)
 
-c      call mpi_finalize(ierr)
       end
 
 c---------------------------------------------------------------------
@@ -494,7 +468,6 @@ c---------------------------------------------------------------------
      >              n1,n2,n3,is1,is2,is3,ie1,ie2,ie3
  9             format(15i4)
             endif
-c            call mpi_barrier(mpi_comm_world,ierr)
             call shmem_barrier_all()
          enddo
       endif
@@ -516,7 +489,6 @@ c            call mpi_barrier(mpi_comm_world,ierr)
                   write(*,*)'take_ex(ax,2)= ',take_ex(ax,2)
                enddo
             endif
-c            call mpi_barrier(mpi_comm_world,ierr)
             call shmem_barrier_all()
          enddo
       endif
@@ -648,7 +620,6 @@ c---------------------------------------------------------------------
 c---------------------------------------------------------------------
 c     exchange boundary points
 c---------------------------------------------------------------------
-c      print *,"comm3 called from psinv"
       call comm3(u,n1,n2,n3,k)
 
       if( debug_vec(0) .ge. 1 )then
@@ -717,7 +688,6 @@ c---------------------------------------------------------------------
 c---------------------------------------------------------------------
 c     exchange boundary data
 c---------------------------------------------------------------------
-c      print *,"comm3 called from resid"
       call comm3(r,n1,n2,n3,k)
 
       if( debug_vec(0) .ge. 1 )then
@@ -813,7 +783,6 @@ C             i1 = 2*j1-1
 
 
       j = k-1
-c      print *,"comm3 called from rpij"
       call comm3(s,m1j,m2j,m3j,j)
 
       if( debug_vec(0) .ge. 1 )then
@@ -979,7 +948,6 @@ c      parameter( m=535 )
 
       endif
 
-c      print *,"comm3_ex called from interp"
       call comm3_ex(u,n1,n2,n3,k)
 
       if( debug_vec(0) .ge. 1 )then
@@ -1048,12 +1016,8 @@ c---------------------------------------------------------------------
       psync2 = SHMEM_SYNC_VALUE
       call shmem_barrier_all();
       
-c      call mpi_allreduce(rnmu,ss,1,dp_type,
-c     >     mpi_max,mpi_comm_world,ierr)
       call shmem_real8_max_to_all(ss,rnmu,1,0,0,nprocs,pwrk1,psync1)
       rnmu = ss
-c      call mpi_allreduce(s, ss, 1, dp_type,
-c     >     mpi_sum,mpi_comm_world,ierr)
       call shmem_real8_sum_to_all(ss,s,1,0,0,nprocs,pwrk2,psync2)
       s = ss
       rnm2=sqrt( s / float( n ))
@@ -1113,7 +1077,6 @@ c---------------------------------------------------------------------
       double precision u(n1,n2,n3)
       integer axis
 
-c      print *,"begin of comm3:",me
       do  axis = 1, 3
        call shmem_barrier_all()
        if( .not. dead(kk) )then
@@ -1133,11 +1096,9 @@ c      print *,"begin of comm3:",me
       enddo
 
       if( dead(kk) )then
-c         print *,"process",me,"calling zero3"
          call zero3(u,n1,n2,n3)
       endif
       call shmem_barrier_all()
-c      print *,"end of comm3:",me
       return
       end
 
@@ -1165,7 +1126,6 @@ c---------------------------------------------------------------------
 
 
       do  axis = 1, 3
-   
            call shmem_barrier_all()
             if( take_ex( axis, kk ) )then
                call ready( axis, -1 )
@@ -1218,12 +1178,6 @@ c     fake message request type
 c---------------------------------------------------------------------
       msg_id(axis,dir,1) = msg_type(axis,dir) +1000*me
 
-c      print *, 'irecv by process:',me,msg_type(axis,dir)
-
-c     not necessary for shmem. just posts fake recv for mpi_wait later.
-c      call mpi_irecv( buff(1,buff_id), buff_len,
-c     >     dp_type, mpi_any_source, msg_type(axis,dir), 
-c     >     mpi_comm_world,msg_id(axis,dir,1),ierr)
       return
       end
 
@@ -1263,10 +1217,6 @@ c---------------------------------------------------------------------
                enddo
             enddo
 
-c            call mpi_send(
-c     >           buff(1, buff_id ), buff_len,dp_type,
-c     >           nbr( axis, dir, k ), msg_type(axis,dir),
-c     >           mpi_comm_world, ierr)
            call shmem_double_put(buff(1,buff_id1),buff(1,buff_id),
      >           buff_len, nbr( axis, dir, k ))
 
@@ -1282,10 +1232,6 @@ c     >           mpi_comm_world, ierr)
 
             call shmem_double_put(buff(1,buff_id1),buff(1,buff_id),
      >           buff_len, nbr( axis, dir, k ))
-c            call mpi_send(
-c     >           buff(1, buff_id ), buff_len,dp_type,
-c     >           nbr( axis, dir, k ), msg_type(axis,dir),
-c     >           mpi_comm_world, ierr)
 
 
          endif
@@ -1303,10 +1249,6 @@ c     >           mpi_comm_world, ierr)
 
            call shmem_double_put(buff(1,buff_id1),buff(1,buff_id),
      >           buff_len, nbr( axis, dir, k ))
-c            call mpi_send(
-c     >           buff(1, buff_id ), buff_len,dp_type,
-c     >           nbr( axis, dir, k ), msg_type(axis,dir),
-c     >           mpi_comm_world, ierr)
 
 
          else if( dir .eq. +1 ) then
@@ -1320,10 +1262,6 @@ c     >           mpi_comm_world, ierr)
 
             call shmem_double_put(buff(1,buff_id1),buff(1,buff_id),
      >           buff_len, nbr( axis, dir, k ))
-c            call mpi_send(
-c     >           buff(1, buff_id ), buff_len,dp_type,
-c     >           nbr( axis, dir, k ), msg_type(axis,dir),
-c     >           mpi_comm_world, ierr)
 
          endif
       endif
@@ -1340,10 +1278,6 @@ c     >           mpi_comm_world, ierr)
 
             call shmem_double_put(buff(1,buff_id1),buff(1,buff_id),
      >           buff_len, nbr( axis, dir, k ))
-c            call mpi_send(
-c     >           buff(1, buff_id ), buff_len,dp_type,
-c     >           nbr( axis, dir, k ), msg_type(axis,dir),
-c     >           mpi_comm_world, ierr)
 
 
          else if( dir .eq. +1 ) then
@@ -1357,10 +1291,6 @@ c     >           mpi_comm_world, ierr)
 
             call shmem_double_put(buff(1,buff_id1),buff(1,buff_id),
      >           buff_len, nbr( axis, dir, k ))
-c            call mpi_send(
-c     >           buff(1, buff_id ), buff_len,dp_type,
-c     >           nbr( axis, dir, k ), msg_type(axis,dir),
-c     >           mpi_comm_world, ierr)
 
 
          endif
@@ -1395,10 +1325,6 @@ c---------------------------------------------------------------------
 
       integer i3, i2, i1,temp
 
-c       call mpi_wait( msg_id( axis, dir, 1 ),status,ierr)
-c      call shmem_barrier_all()
-c      print *, 'mpi_wait END by process:',me,msg_type(axis,dir)
-c      call exit(1)
 
       buff_id = 3 + dir
       indx = 0
@@ -1509,10 +1435,6 @@ c---------------------------------------------------------------------
 
             call shmem_double_put(buff(1,buff_id1),buff(1,buff_id),
      >           buff_len, nbr( axis, dir, k ))
-c            call mpi_send(
-c     >           buff(1, buff_id ), buff_len,dp_type,
-c     >           nbr( axis, dir, k ), msg_type(axis,dir),
-c     >           mpi_comm_world, ierr)
 
 
          else if( dir .eq. +1 ) then
@@ -1528,10 +1450,6 @@ c     >           mpi_comm_world, ierr)
 
             call shmem_double_put(buff(1,buff_id1),buff(1,buff_id),
      >           buff_len, nbr( axis, dir, k ))
-c            call mpi_send(
-c     >           buff(1, buff_id ), buff_len,dp_type,
-c     >           nbr( axis, dir, k ), msg_type(axis,dir),
-c     >           mpi_comm_world, ierr)
 
 
          endif
@@ -1549,10 +1467,6 @@ c     >           mpi_comm_world, ierr)
 
             call shmem_double_put(buff(1,buff_id1),buff(1,buff_id),
      >           buff_len, nbr( axis, dir, k ))
-c            call mpi_send(
-c     >           buff(1, buff_id ), buff_len,dp_type,
-c     >           nbr( axis, dir, k ), msg_type(axis,dir),
-c     >           mpi_comm_world, ierr)
 
          else if( dir .eq. +1 ) then
 
@@ -1567,10 +1481,6 @@ c     >           mpi_comm_world, ierr)
 
             call shmem_double_put(buff(1,buff_id1),buff(1,buff_id),
      >           buff_len, nbr( axis, dir, k ))
-c            call mpi_send(
-c     >           buff(1, buff_id ), buff_len,dp_type,
-c     >           nbr( axis, dir, k ), msg_type(axis,dir),
-c     >           mpi_comm_world, ierr)
 
 
          endif
@@ -1588,10 +1498,6 @@ c     >           mpi_comm_world, ierr)
 
             call shmem_double_put(buff(1,buff_id1),buff(1,buff_id),
      >           buff_len, nbr( axis, dir, k ))
-c            call mpi_send(
-c     >           buff(1, buff_id ), buff_len,dp_type,
-c     >           nbr( axis, dir, k ), msg_type(axis,dir),
-c     >           mpi_comm_world, ierr)
 
 
          else if( dir .eq. +1 ) then
@@ -1607,10 +1513,6 @@ c     >           mpi_comm_world, ierr)
 
             call shmem_double_put(buff(1,buff_id1),buff(1,buff_id),
      >           buff_len, nbr( axis, dir, k ))
-c            call mpi_send(
-c     >           buff(1, buff_id ), buff_len,dp_type,
-c     >           nbr( axis, dir, k ), msg_type(axis,dir),
-c     >           mpi_comm_world, ierr)
 
 
          endif
@@ -1635,7 +1537,6 @@ c---------------------------------------------------------------------
       include 'mpinpb.h'
       include 'globals.h'
       include 'mpp/shmem.fh'
-c      include 'new_global.h'
 
       integer axis, dir, n1, n2, n3
       double precision u( n1, n2, n3 )
@@ -1647,8 +1548,6 @@ c      include 'new_global.h'
       integer i3, i2, i1
 
 
-c      print *, '+mpi_wait BEGIN by process:',me,msg_type(axis,dir)
-c      call mpi_wait( msg_id( axis, dir, 1 ),status,ierr)
       buff_id = 3 + dir
       indx = 0
 
@@ -2206,7 +2105,6 @@ c---------------------------------------------------------------------
          enddo
       enddo
 
-c      call mpi_barrier(mpi_comm_world,ierr)
       psync1 = SHMEM_SYNC_VALUE
       psync2 = SHMEM_SYNC_VALUE
       call shmem_barrier_all()
@@ -2219,8 +2117,6 @@ c---------------------------------------------------------------------
       do  i=mm,1,-1
 
          best = z( j1(i1,1), j2(i1,1), j3(i1,1) )
-c         call mpi_allreduce(best,temp,1,dp_type,
-c     >        mpi_max,mpi_comm_world,ierr)
          call shmem_real8_max_to_all(temp,best,1,0,0,nprocs,pwrk1,
      >                               psync1)
          best = temp
@@ -2237,8 +2133,6 @@ c     >        mpi_max,mpi_comm_world,ierr)
             jg( 3, i, 1) = 0
          endif
          ten( i, 1 ) = best
-c         call mpi_allreduce(jg(0,i,1), jg_temp,4,MPI_INTEGER,
-c     >        mpi_max,mpi_comm_world,ierr)
          call shmem_int4_max_to_all(jg_temp,jg(0,i,1),4,0,0,nprocs,
      >                            pwrk2,psync2)
          jg( 0, i, 1) =  jg_temp(1)
@@ -2247,8 +2141,6 @@ c     >        mpi_max,mpi_comm_world,ierr)
          jg( 3, i, 1) =  jg_temp(4)
 
          best = z( j1(i0,0), j2(i0,0), j3(i0,0) )
-c         call mpi_allreduce(best,temp,1,dp_type,
-c     >        mpi_min,mpi_comm_world,ierr)
          call shmem_real8_min_to_all(temp,best,1,0,0,nprocs,pwrk1,
      >                                psync1)
          best = temp
@@ -2265,8 +2157,6 @@ c     >        mpi_min,mpi_comm_world,ierr)
             jg( 3, i, 0) = 0
          endif
          ten( i, 0 ) = best
-c         call mpi_allreduce(jg(0,i,0), jg_temp,4,MPI_INTEGER,
-c     >        mpi_max,mpi_comm_world,ierr)
          call shmem_int4_max_to_all(jg_temp,jg(0,i,0),4,0,0,nprocs,
      >                            pwrk2,psync2)
          jg( 0, i, 0) =  jg_temp(1)
@@ -2296,7 +2186,6 @@ c      endif
 c 9    format(5(' (',i3,2(',',i3),')'))
 c 8    format(5D15.8)
 c 7    format(10i4)
-c      call mpi_barrier(mpi_comm_world,ierr)
       call shmem_barrier_all()   
       do  i3=1,n3
          do  i2=1,n2
@@ -2311,7 +2200,6 @@ c      call mpi_barrier(mpi_comm_world,ierr)
       do  i=mm,m1,-1
          z( j1(i,1), j2(i,1), j3(i,1) ) = +1.0D0
       enddo
-c      print *,"comm3 called from zran3"
       call comm3(z,n1,n2,n3,k)
 
 c---------------------------------------------------------------------
@@ -2354,7 +2242,6 @@ c---------------------------------------------------------------------
             write(*,*)'  '
  6          format(6f15.11)
          endif
-c         call mpi_barrier(mpi_comm_world,ierr)
          call shmem_barrier_all()
       enddo
 
@@ -2394,7 +2281,6 @@ c---------------------------------------------------------------------
             write(*,*)'  '
  6          format(15f6.3)
          endif
-c         call mpi_barrier(mpi_comm_world,ierr)
          call shmem_barrier_all()
       enddo
 
@@ -2428,7 +2314,6 @@ c---------------------------------------------------------------------
             write(*,*)'  '
  6          format(8D10.3)
          endif
-c         call mpi_barrier(mpi_comm_world,ierr)
          call shmem_barrier_all()
       enddo
 
