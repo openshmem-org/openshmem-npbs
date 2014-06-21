@@ -187,9 +187,6 @@ c---------------------------------------------------------------------
 c---------------------------------------------------------------------
 c     send buffer 
 c---------------------------------------------------------------------
-c      X-1
-c      call mpi_win_fence(MPI_MODE_NOPUT+MPI_MODE_NOPRECEDE, win, error)
-c      call shmem_barrier_all()
       if (timeron) call timer_stop(t_ycomm)
 
       return
@@ -225,9 +222,6 @@ c---------------------------------------------------------------------
             ptr = ptr+BLOCK_SIZE
          enddo
       enddo
-c      X-1
-c      call mpi_win_fence(MPI_MODE_NOPUT+MPI_MODE_NOPRECEDE, win, error)
-c      call shmem_barrier_all()
       if (timeron) call timer_stop(t_ycomm)
 
       return
@@ -280,15 +274,9 @@ c---------------------------------------------------------------------
       p0 = buffoff(buff_id)
       buff_id = 3 - buff_id
       disp = p0
-c      X-1
-c      call mpi_get(in_buffer, buffer_size, dp_type, 
-c     >   successor(2), disp, buffer_size, dp_type, win, error)
       call shmem_barrier_all()
       call shmem_double_get(in_buffer,
      >   out_buffer(disp+1), buffer_size, successor(2))
-c      X-1
-c      call mpi_win_fence(MPI_MODE_NOSUCCEED, win, error)
-c      call shmem_barrier_all()
 
       return
       end
@@ -312,15 +300,9 @@ c---------------------------------------------------------------------
       p0 = buffoff(buff_id)
       buff_id = 3 - buff_id
       disp = p0
-c      X-1
-c      call mpi_get(in_buffer, buffer_size, dp_type, 
-c     >   predecessor(2), disp, buffer_size, dp_type, win, error)
       call shmem_barrier_all()
       call shmem_double_get(in_buffer,
      >   out_buffer(disp+1), buffer_size, predecessor(2))
-c      X-1
-c      call mpi_win_fence(MPI_MODE_NOSUCCEED, win, error)
-c      call shmem_barrier_all()
 
       return
       end

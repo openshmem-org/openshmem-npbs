@@ -11,7 +11,6 @@ c      niter_default: default number of iterations for this problem size
 c---------------------------------------------------------------------
 
       include 'npbparams.h'
-c     X-1
       include 'mpif.h'
 
       integer, parameter :: maxcelldim = (problem_size/maxcells)+1,
@@ -25,14 +24,10 @@ c     X-1
       double precision :: in_buffer(BUF_SIZE)
       integer :: buffoff(3), buff_id
 
-c     X-1
       double precision, save :: out_buffer(BUF_SIZE+BUF_SIZZ*3)
       double precision, save :: out_buffer1(BUF_SIZE+BUF_SIZZ*3)
-c      double precision :: out_buffer(BUF_SIZE+BUF_SIZZ*3)
 
       integer :: win, group, pred_group(3), succ_group(3)
-c     X-1
-c      integer disp
       integer(kind=mpi_address_kind) disp
 
       end module npbrma

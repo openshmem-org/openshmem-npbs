@@ -162,7 +162,7 @@ c             set default to No-File-Hints with a value of 0
           if (iotype .eq. 3) write(*, 1006) 'EPIO', wr_interval
           if (iotype .eq. 4) write(*, 1006) 'FORTRAN IO', wr_interval
 
- 1000 format(//, ' NAS Parallel Benchmarks 3.3 -- BT Benchmark ',/)
+ 1000     format(//, ' NAS Parallel Benchmarks 3.3 -- BT Benchmark ',/)
  1001     format(' Size: ', i4, 'x', i4, 'x', i4)
  1002     format(' Iterations: ', i4, '    dt: ', F11.7)
  1004     format(' Total number of processes: ', i5)
@@ -173,31 +173,19 @@ c             set default to No-File-Hints with a value of 0
        endif
 
 c  ... broadcast parameters
-c       call mpi_bcast(niter, 1, MPI_INTEGER,
-c     >                root, MPI_COMM_WORLD, error)
       call shmem_broadcast4(niter, niter, 1, 0, 0, 0, no_nodes, psync1)
 
-c      call mpi_bcast(dt, 1, dp_type, 
-c     >                root, MPI_COMM_WORLD, error)
       call shmem_broadcast8(dt, dt, 1, 0, 0, 0, no_nodes, psync2)
 
-c       call mpi_bcast(grid_points, 3, MPI_INTEGER, 
-c     >                root, MPI_COMM_WORLD, error)
       call shmem_broadcast4(grid_points, grid_points, 3, 0, 0, 0, 
      >                      no_nodes, psync1)
 
-c       call mpi_bcast(wr_interval, 1, MPI_INTEGER,
-c     >                root, MPI_COMM_WORLD, error)
       call shmem_broadcast4(wr_interval, wr_interval, 1, 0, 0, 0, 
      >                      no_nodes, psync2)
 
-c       call mpi_bcast(rd_interval, 1, MPI_INTEGER,
-c     >                root, MPI_COMM_WORLD, error)
       call shmem_broadcast4(rd_interval, rd_interval, 1, 0, 0, 0, 
      >                      no_nodes, psync1)
 
-c       call mpi_bcast(timeron, 1, MPI_LOGICAL,
-c     >                root, MPI_COMM_WORLD, error)
       call shmem_broadcast4(timeron,timeron,1,0,0,0,no_nodes,psync2)
 
        call make_set
@@ -241,8 +229,6 @@ c---------------------------------------------------------------------
        do  i = 1, t_last
           call timer_clear(i)
        end do
-c       X-1
-c       call mpi_barrier(MPI_COMM_WORLD, error)
       call shmem_barrier_all()
 
        call timer_start(1)
@@ -284,18 +270,11 @@ c       call mpi_barrier(MPI_COMM_WORLD, error)
 
        call verify(niter, class, verified)
 
-c       X-1
-c       call mpi_reduce(t, tmax, 1, 
-c     >                 dp_type, MPI_MAX, 
-c     >                 root, MPI_COMM_WORLD, error)
        call shmem_real8_max_to_all(tmax,t,1,0,0,no_nodes,pwrk,psync)
 
        if (iotype .ne. 0) then
           t = timer_read(2)
           if (t .ne. 0.d0) t = 1.0d0 / t
-c          call mpi_reduce(t, tiominv, 1, 
-c     >                    dp_type, MPI_SUM, 
-c     >                    root, MPI_COMM_WORLD, error)
        call shmem_real8_sum_to_all(tiominv,t,1,0,0,no_nodes,pwrk,psync)
        endif
 
@@ -343,19 +322,12 @@ c     >                    root, MPI_COMM_WORLD, error)
        t1(t_last+2) = t1(t_xcomm)+t1(t_ycomm)+t1(t_zcomm)+t1(t_exch)
        t1(t_last+1) = t1(t_total)  - t1(t_last+2)
 
-c       X-1
-c       call mpi_reduce(t1, tsum, t_last+2, 
-c     >                 dp_type, MPI_SUM, root, MPI_COMM_WORLD, error)
       call shmem_real8_sum_to_all(tsum,t1,t_last+2,0,0,
      >                            no_nodes,pwrk,psync)
 
-c       call mpi_reduce(t1, tming, t_last+2, 
-c     >                 dp_type, MPI_MIN, root, MPI_COMM_WORLD, error)
       call shmem_real8_min_to_all(tming,t1,t_last+2,0,0,
      >                            no_nodes,pwrk,psync)
 
-c       call mpi_reduce(t1, tmaxg, t_last+2, 
-c     >                 dp_type, MPI_MAX, root, MPI_COMM_WORLD, error)
       call shmem_real8_max_to_all(tmaxg,t1,t_last+2,0,0,
      >                            no_nodes,pwrk,psync)
 
@@ -371,11 +343,7 @@ c     >                 dp_type, MPI_MAX, root, MPI_COMM_WORLD, error)
  810   format(' timer ', i2, '(', A8, ') :', 3(2x,f10.4))
 
  999   continue
-c       X-1
-c       call mpi_barrier(MPI_COMM_WORLD, error)
        call shmem_barrier_all()
-c       if (active) call mpi_win_free(win, error)
-c       call mpi_finalize(error)
 
        end
 

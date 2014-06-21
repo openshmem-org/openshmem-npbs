@@ -59,9 +59,6 @@ c     X-1
          enddo
       enddo
 
-c      X-1
-c      call mpi_allreduce(rms_work, rms, 5, 
-c     >                   dp_type, MPI_SUM, MPI_COMM_WORLD, error)
       call shmem_real8_sum_to_all(rms,rms_work,5,0,0,
      >                            no_nodes,pwrk1,psync1)
 
@@ -119,9 +116,6 @@ c     X-1
          enddo 
       enddo 
 
-c      X-1
-c      call mpi_allreduce(rms_work, rms, 5, 
-c     >                   dp_type, MPI_SUM, MPI_COMM_WORLD, error)
       call shmem_real8_sum_to_all(rms,rms_work,5,0,0,
      >                            no_nodes,pwrk1,psync1)
 

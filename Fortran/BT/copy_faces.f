@@ -187,8 +187,6 @@ c---------------------------------------------------------------------
 c .... synchronize all updates and get remote data
       if (timeron) call timer_start(t_exch)
 c      X-1
-c      call mpi_win_fence(MPI_MODE_NOPUT+MPI_MODE_NOPRECEDE, win, error)
-c      call mpi_win_fence(0,win, error)
       call shmem_barrier_all()
       do c = 0, 5
          disp = sr(c)
@@ -196,15 +194,8 @@ c         disp = ss(c)
          call shmem_double_get(in_buffer(sr(c)), 
      >   out_buffer(disp), b_size(c), sr_n(c))
 c         X-1
-c         call mpi_get(in_buffer(sr(c)), b_size(c), dp_type,
-c     >      sr_n(c), disp, b_size(c), dp_type, win, error)
       end do
       call shmem_barrier_all()
-c      print *,"Process",node,(in_buffer(i),i=1,5)
-c      call exit(0)
-c      X-1
-c      call mpi_win_fence(MPI_MODE_NOSUCCEED, win, error)
-c      call mpi_win_fence(0,win, error)
 
       if (timeron) call timer_stop(t_exch)
 

@@ -83,13 +83,6 @@ c---------------------------------------------------------------------
       successor(2)   = i + p*mod(j+1,p)
       successor(3)   = mod(i-1+p,p) + p*mod(j+1,p)
 
-c     X-1
-c      do dir = 1, 3
-c         call mpi_group_incl(group, 1, predecessor(dir), 
-c     >                       pred_group(dir), ierr)
-c         call mpi_group_incl(group, 1, successor(dir), 
-c     >                       succ_group(dir), ierr)
-c      end do
 
 c---------------------------------------------------------------------
 c     now compute the sizes of the cells                                    
