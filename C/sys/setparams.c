@@ -408,7 +408,6 @@ c  \n");
       case FT:
       case MG:
       case LU:
-      case EP:
       case CG:
           /* Write out the header */
           fprintf(fp, DESC_LINE, nprocs, class);
@@ -422,6 +421,7 @@ c  in this directory. Do not modify it by hand.\n\
 c  \n");
 
           break;
+      case EP:
       case IS:
       case DT:
           fprintf(fp, DEF_CLASS_LINE, class);
@@ -811,12 +811,9 @@ void write_ep_info(FILE *fp, int nprocs, char class)
   /* number of processors given by "npm" */
 
 
-  fprintf(fp, "%scharacter class\n",FINDENT);
-  fprintf(fp, "%sparameter (class =\'%c\')\n",
-                  FINDENT, class);
-  fprintf(fp, "%sinteger m, npm\n", FINDENT);
-  fprintf(fp, "%sparameter (m=%d, npm=%d)\n",
-          FINDENT, m, nprocs);
+  fprintf(fp, "#define CLASS  \'%c\'\n", class);
+  fprintf(fp, "#define M      %d\n", m);
+  fprintf(fp, "#define npm    %d\n", nprocs);
 }
 
 
@@ -908,7 +905,6 @@ setparams: File %s doesn't exist. To build the NAS benchmarks\n\
       case BT:
       case MG:
       case LU:
-      case EP:
       case CG:
           put_string(fp, "compiletime", compiletime);
           put_string(fp, "npbversion", VERSION);
@@ -920,6 +916,7 @@ setparams: File %s doesn't exist. To build the NAS benchmarks\n\
           put_string(fp, "cs6", flinkflags);
 	  put_string(fp, "cs7", randfile);
           break;
+      case EP:
       case IS:
       case DT:
           put_def_string(fp, "COMPILETIME", compiletime);
@@ -930,6 +927,7 @@ setparams: File %s doesn't exist. To build the NAS benchmarks\n\
           put_def_string(fp, "CLINKFLAGS", clinkflags);
           put_def_string(fp, "CMPI_LIB", cmpi_lib);
           put_def_string(fp, "CMPI_INC", cmpi_inc);
+          put_def_string(fp, "CRANDFILE", randfile);
           break;
       default:
           printf("setparams: (Internal error): Unknown benchmark type %d\n", 
@@ -1133,7 +1131,6 @@ void write_convertdouble_info(int type, FILE *fp)
   case LU:
   case FT:
   case MG:
-  case EP:
   case CG:
     fprintf(fp, "%slogical  convertdouble\n", FINDENT);
 #ifdef CONVERTDOUBLE

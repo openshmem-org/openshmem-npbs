@@ -42,11 +42,11 @@
 #include <math.h>
 #include <shmem.h>
 
-#include "type.h"
+//#include "type.h"
 #include "npbparams.h"
-#include "randdp.h"
-#include "timers.h"
-#include "print_results.h"
+//#include "randdp.h"
+//#include "c_timers.h"
+//#include "c_print_results.h"
 
 #define MAX(X,Y)  (((X) > (Y)) ? (X) : (Y))
 
@@ -59,6 +59,34 @@
 #define A         1220703125.0
 #define S         271828183.0
 
+
+void    timer_clear( int n );
+void    timer_start( int n );
+void    timer_stop( int n );
+double  timer_read( int n );
+double	randlc(double *x1, double *a1);
+
+void c_print_results( char   *name,
+                      char   class,
+                      int    n1, 
+                      int    n2,
+                      int    n3,
+                      int    niter,
+                      int    nprocs_compiled,
+                      int    nprocs_total,
+                      double t,
+                      double mops,
+                      char   *optype,
+                      int    passed_verification,
+                      char   *npbversion,
+                      char   *compiletime,
+                      char   *mpicc,
+                      char   *clink,
+                      char   *cmpi_lib,
+                      char   *cmpi_inc,
+                      char   *cflags,
+                      char   *clinkflags );
+
 static double x[2 * NK];
 static double qq[NQ];
 static double q[NQ];
@@ -69,6 +97,10 @@ double timer1, timer2;
 
 long pSync[_SHMEM_REDUCE_SYNC_SIZE];
 double pWrk[_SHMEM_REDUCE_SYNC_SIZE];
+
+typedef int logical;
+const int true = 1;
+const int false = 0;
 
 int
 main (int argc, char *argv[])
@@ -144,7 +176,7 @@ main (int argc, char *argv[])
   //--------------------------------------------------------------------
 
   vranlc (0, &dum[0], dum[1], &dum[2]);
-  dum[0] = randlc (&dum[1], dum[2]);
+  dum[0] = randlc (&dum[1], &dum[2]);
 
   for (i = 0; i < 2 * NK; i++)
     {
@@ -173,7 +205,7 @@ main (int argc, char *argv[])
 
   for (i = 0; i < MK + 1; i++)
     {
-      t2 = randlc (&t1, t1);
+      t2 = randlc (&t1, &t1);
     }
 
   an = t1;
@@ -233,10 +265,10 @@ main (int argc, char *argv[])
 	{
 	  ik = kk / 2;
 	  if ((2 * ik) != kk)
-	    t3 = randlc (&t1, t2);
+	    t3 = randlc (&t1, &t2);
 	  if (ik == 0)
 	    break;
-	  t3 = randlc (&t2, t2);
+	  t3 = randlc (&t2, &t2);
 	  kk = ik;
 	}
 
@@ -368,11 +400,11 @@ main (int argc, char *argv[])
 	  printf ("%3d%15.0lf\n", i, q[i]);
 	}
 
-      print_results ("EP", CLASS, M + 1, 0, 0, nit,
-		     tm, Mops,
+      c_print_results ("EP", CLASS, M + 1, 0, 0, nit,
+              npm, npes, tm, Mops,
 		     "Random numbers generated",
-		     verified, NPBVERSION, COMPILETIME, CS1,
-		     CS2, CS3, CS4, CS5, CS6, CS7);
+		     verified, NPBVERSION, COMPILETIME, MPICC,
+		     CLINK, CMPI_LIB, CMPI_INC, CFLAGS, CLINKFLAGS);
 
       if (timers_enabled)
 	{

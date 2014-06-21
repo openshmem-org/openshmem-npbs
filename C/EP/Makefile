@@ -7,10 +7,9 @@ include ../config/make.def
 include ../sys/make.common
 
 OBJS = ep.o \
-			 ${COMMON}/print_results.o \
-			 ${COMMON}/${RAND}.o \
-       ${COMMON}/c_timers.o \
-			 ${COMMON}/wtime.o
+			 ${COMMON}/c_print_results.o \
+			 ${COMMON}/c_randdp.o \
+       ${COMMON}/c_timers.o
 
 
 ${PROGRAM}: config ${OBJS}
