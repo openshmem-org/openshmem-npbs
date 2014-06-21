@@ -257,8 +257,8 @@ c---------------------------------------------------------------------
          call print_results('SP', class, grid_points(1), 
      >     grid_points(2), grid_points(3), niter, maxcells*maxcells, 
      >     total_nodes, tmax, mflops, '          floating point', 
-     >     verified, npbversion,compiletime, cs1, cs2, cs3, cs4, cs5, 
-     >     cs6, '(none)')
+     >     verified, npbversion,compiletime, 
+     >     cs1, cs2, cs3, cs8, cs9, cs4, cs5, cs6, '(none)')
        endif
 
        if (.not.timeron) goto 999

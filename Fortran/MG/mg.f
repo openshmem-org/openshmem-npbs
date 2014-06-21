@@ -368,7 +368,7 @@ c---------------------------------------------------------------------
      >                      nit, nprocs_compiled, nprocs, t,
      >                      mflops, '          floating point', 
      >                      verified, npbversion, compiletime,
-     >                      cs1, cs2, cs3, cs4, cs5, cs6, cs7)
+     >                      cs1, cs2, cs3, cs8, cs9, cs4, cs5, cs6, cs7)
          write (*, 6) ttotal
  6       format(' RUn Time in seconds = ',12x, f12.2)
 
