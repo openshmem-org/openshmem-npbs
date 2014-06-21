@@ -18,8 +18,10 @@ void c_print_results( char   *name,
                       int    passed_verification,
                       char   *npbversion,
                       char   *compiletime,
-                      char   *mpicc,
+                      char   *shmemcc,
                       char   *clink,
+                      char   *cshmem_lib,
+                      char   *cshmem_inc,
                       char   *cmpi_lib,
                       char   *cmpi_inc,
                       char   *cflags,
@@ -62,9 +64,13 @@ void c_print_results( char   *name,
 
     printf( "\n Compile options:\n" );
 
-    printf( "    MPICC        = %s\n", mpicc );
+    printf( "    SHMEMCC        = %s\n", shmemcc );
 
     printf( "    CLINK        = %s\n", clink );
+
+    printf( "    CSHMEM_LIB     = %s\n", cshmem_lib );
+
+    printf( "    CSHMEM_INC     = %s\n", cshmem_inc );
 
     printf( "    CMPI_LIB     = %s\n", cmpi_lib );
 

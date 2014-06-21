@@ -1,6 +1,6 @@
 PROGRAM  = $(BINDIR)/$(BENCHMARK).$(CLASS).$(NPROCS)
-FCOMPILE = $(MPIF77) -c $(FMPI_INC) $(FFLAGS)
-CCOMPILE = $(MPICC)  -c $(CMPI_INC) $(CFLAGS)
+FCOMPILE = $(SHMEMF77) -c $(FMPI_INC) $(FSHMEM_INC) $(FFLAGS)
+CCOMPILE = $(SHMEMCC)  -c $(CMPI_INC) $(FSHMEM_INC) $(CFLAGS)
 
 # Class "U" is used internally by the setparams program to mean
 # "unknown". This means that if you don't specify CLASS=

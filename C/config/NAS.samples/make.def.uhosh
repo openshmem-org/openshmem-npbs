@@ -15,25 +15,34 @@
 # For CG, EP, FT, MG, LU, SP and BT, which are in Fortran, the following must 
 # be defined:
 #
-# MPIF77     - Fortran compiler
+# SHMEMF77     - Fortran compiler
 # FFLAGS     - Fortran compilation arguments
-# FMPI_INC   - any -I arguments required for compiling MPI/Fortran 
+# FSHMEM_INC   - any -I arguments required for compiling MPI/Fortran 
 # FLINK      - Fortran linker
 # FLINKFLAGS - Fortran linker arguments
-# FMPI_LIB   - any -L and -l arguments required for linking MPI/Fortran 
+# FSHMEM_LIB   - any -L and -l arguments required for linking MPI/Fortran 
 # 
-# compilations are done with $(MPIF77) $(FMPI_INC) $(FFLAGS) or
-#                            $(MPIF77) $(FFLAGS)
-# linking is done with       $(FLINK) $(FMPI_LIB) $(FLINKFLAGS)
+# compilations are done with $(SHMEMF77) $(FSHMEM_INC) $(FMPI_INC) $(FFLAGS) or
+#                            $(SHMEMF77) $(FFLAGS)
+# linking is done with       $(FLINK) $(FSHMEM_LIB) $(FMPI_LIB) $(FLINKFLAGS)
 #---------------------------------------------------------------------------
 
 #---------------------------------------------------------------------------
-# This is the fortran compiler used for MPI programs
+# This is the fortran compiler used for SHMEM programs
 #---------------------------------------------------------------------------
-MPIF77 = oshf90
-# This links MPI fortran programs; usually the same as ${MPIF77}
-FLINK	= $(MPIF77)
+SHMEMF77 = oshfort
+# This links SHMEM fortran programs; usually the same as ${SHMEMF77}
+FLINK	= $(SHMEMF77)
 
+#---------------------------------------------------------------------------
+# These macros are passed to the linker to help link with SHMEM correctly
+#---------------------------------------------------------------------------
+FSHMEM_LIB  =
+
+#---------------------------------------------------------------------------
+# These macros are passed to the compiler to help find 'shmem.fh'
+#---------------------------------------------------------------------------
+FSHMEM_INC = 
 #---------------------------------------------------------------------------
 # These macros are passed to the linker to help link with MPI correctly
 #---------------------------------------------------------------------------
@@ -42,19 +51,23 @@ FMPI_LIB  =
 #---------------------------------------------------------------------------
 # These macros are passed to the compiler to help find 'mpif.h'
 #---------------------------------------------------------------------------
-FMPI_INC =
+FMPI_INC = 
 
 #---------------------------------------------------------------------------
 # Global *compile time* flags for Fortran programs
 #---------------------------------------------------------------------------
-FFLAGS	= -O3
+FFLAGS	= -O3 -g -I./ 
+
+# use this for building CLASS D
+#FFLAGS	= -O3 -g -mcmodel=medium -I./ 
+
 # FFLAGS = -g
 
 #---------------------------------------------------------------------------
 # Global *link time* flags. Flags for increasing maximum executable 
 # size usually go here. 
 #---------------------------------------------------------------------------
-FLINKFLAGS = -O3
+FLINKFLAGS = -O3 -g
 
 
 #---------------------------------------------------------------------------
@@ -62,46 +75,57 @@ FLINKFLAGS = -O3
 #
 # For IS, which is in C, the following must be defined:
 #
-# MPICC      - C compiler 
+# SHMEMCC      - C compiler 
 # CFLAGS     - C compilation arguments
+# CSHMEM_INC   - any -I arguments required for compiling SHMEM/C 
 # CMPI_INC   - any -I arguments required for compiling MPI/C 
 # CLINK      - C linker
 # CLINKFLAGS - C linker flags
+# CSHMEM_LIB   - any -L and -l arguments required for linking SHMEM/C 
 # CMPI_LIB   - any -L and -l arguments required for linking MPI/C 
 #
-# compilations are done with $(MPICC) $(CMPI_INC) $(CFLAGS) or
-#                            $(MPICC) $(CFLAGS)
-# linking is done with       $(CLINK) $(CMPI_LIB) $(CLINKFLAGS)
+# compilations are done with $(SHMEMCC) $(CSHMEM_INC) $(CMPI_INC) $(CFLAGS) or
+#                            $(SHMEMCC) $(CFLAGS)
+# linking is done with       $(CLINK) $(CSHMEM_LIB) $(CMPI_LIB) $(CLINKFLAGS)
 #---------------------------------------------------------------------------
 
 #---------------------------------------------------------------------------
 # This is the C compiler used for MPI programs
 #---------------------------------------------------------------------------
-MPICC = oshcc
-# This links MPI C programs; usually the same as ${MPICC}
-CLINK	= $(MPICC)
+SHMEMCC = oshcc
+# This links SHMEM C programs; usually the same as ${SHMEMCC}
+CLINK	= $(SHMEMCC)
 
+#---------------------------------------------------------------------------
+# These macros are passed to the linker to help link with SHMEM correctly
+#---------------------------------------------------------------------------
+CSHMEM_LIB  = 
+
+#---------------------------------------------------------------------------
+# These macros are passed to the compiler to help find 'shmem.h'
+#---------------------------------------------------------------------------
+CSHMEM_INC = 
 #---------------------------------------------------------------------------
 # These macros are passed to the linker to help link with MPI correctly
 #---------------------------------------------------------------------------
-CMPI_LIB  =
+CMPI_LIB  = 
 
 #---------------------------------------------------------------------------
 # These macros are passed to the compiler to help find 'mpi.h'
 #---------------------------------------------------------------------------
-CMPI_INC =
+CMPI_INC = 
 
 #---------------------------------------------------------------------------
 # Global *compile time* flags for C programs
 #---------------------------------------------------------------------------
-CFLAGS	= -O3
+CFLAGS	= -O3 -g
 # CFLAGS = -g
 
 #---------------------------------------------------------------------------
 # Global *link time* flags. Flags for increasing maximum executable 
 # size usually go here. 
 #---------------------------------------------------------------------------
-CLINKFLAGS = -O3
+CLINKFLAGS = -O3 -g
 
 
 #---------------------------------------------------------------------------
