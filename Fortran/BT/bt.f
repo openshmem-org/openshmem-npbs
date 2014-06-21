@@ -89,18 +89,15 @@ c---------------------------------------------------------------------
 c---------------------------------------------------------------------
 
        include  'header.h'
-c      X-1
        include 'mpp/shmem.fh'
 
       
        integer i, step, c, error, fstatus
-c       X-1
        integer, save::niter
        double precision navg, mflops, mbytes, n3
 
        external timer_read
 c       double precision t, tmax, tiominv, tpc, timer_read
-c       X-1
        double precision  tpc, timer_read
        double precision, save::t
        double precision, save::tmax
@@ -109,14 +106,12 @@ c       X-1
        character class, cbuff*40
 c       double precision t1(t_last+2), tsum(t_last+2), 
 c     >                  tming(t_last+2), tmaxg(t_last+2)
-c       X-1
        double precision, save:: t1(t_last+2)
        double precision, save:: tsum(t_last+2) 
        double precision, save:: tming(t_last+2)
        double precision, save:: tmaxg(t_last+2)
        character        t_recs(t_last+2)*8
 
-c       X-1
        integer, save::wr_interval
 c       integer wr_interval
 
@@ -124,7 +119,6 @@ c       integer wr_interval
      >             'bpack', 'exch', 'xcomm', 'ycomm', 'zcomm',
      >             ' totcomp', ' totcomm'/
 
-c     X-1
       integer, dimension(SHMEM_REDUCE_SYNC_SIZE), save :: psync
       integer, dimension(SHMEM_BCAST_SYNC_SIZE), save :: psync1
       integer, dimension(SHMEM_BCAST_SYNC_SIZE), save :: psync2
@@ -133,7 +127,6 @@ c     X-1
 
        call setup_rma
  
-c      X-1
        psync = SHMEM_SYNC_VALUE
        psync1 = SHMEM_SYNC_VALUE
        psync2 = SHMEM_SYNC_VALUE

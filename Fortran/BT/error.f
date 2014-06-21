@@ -12,18 +12,15 @@ c     computed solution and the exact solution
 c---------------------------------------------------------------------
 
       include 'header.h'
-c      X-1
-       include 'mpp/shmem.fh'
+      include 'mpp/shmem.fh'
 
       integer c, i, j, k, m, ii, jj, kk, d, error
 c      double precision xi, eta, zeta, u_exact(5), rms(5), rms_work(5),
 c     >     add
       double precision xi, eta, zeta, u_exact(5), rms(5),
      >     add
-c     X-1
       double precision, save:: rms_work(5)
 
-c     X-1
       integer, dimension(SHMEM_REDUCE_SYNC_SIZE), save :: psync1
       double precision, dimension(SHMEM_REDUCE_MIN_WRKDATA_SIZE),
      > save :: pwrk1
@@ -82,16 +79,13 @@ c---------------------------------------------------------------------
 c---------------------------------------------------------------------
 
       include 'header.h'
-c      X-1
        include 'mpp/shmem.fh'
 
       integer c, i, j, k, d, m, error
-c      X-1
 c      double precision rms(5), rms_work(5), add
       double precision add
       double precision rms(5)
       double precision, save:: rms_work(5)
-c     X-1
       integer, dimension(SHMEM_REDUCE_SYNC_SIZE), save :: psync1
       double precision, dimension(SHMEM_REDUCE_MIN_WRKDATA_SIZE),
      > save :: pwrk1

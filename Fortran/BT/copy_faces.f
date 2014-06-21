@@ -186,14 +186,12 @@ c---------------------------------------------------------------------
 
 c .... synchronize all updates and get remote data
       if (timeron) call timer_start(t_exch)
-c      X-1
       call shmem_barrier_all()
       do c = 0, 5
          disp = sr(c)
 c         disp = ss(c)
          call shmem_double_get(in_buffer(sr(c)), 
      >   out_buffer(disp), b_size(c), sr_n(c))
-c         X-1
       end do
       call shmem_barrier_all()
 
