@@ -36,7 +36,7 @@ c---------------------------------------------------------------------
       program EMBAR
 c---------------------------------------------------------------------
 C
-c   This is the MPI version of the APP Benchmark 1,
+c   This is the SHMEM version of the APP Benchmark 1,
 c   the "embarassingly parallel" benchmark.
 c
 c
@@ -76,9 +76,6 @@ c   not affect the results.
       double precision pwrk(SHMEM_REDUCE_MIN_WRKDATA_SIZE)
       save psync, pwrk
 
-c      call mpi_init(ierr)
-c      call mpi_comm_rank(MPI_COMM_WORLD,node,ierr)
-c      call mpi_comm_size(MPI_COMM_WORLD,no_nodes,ierr)
       call start_pes(0)
       no_nodes = num_pes()
       node = my_pe()
@@ -108,14 +105,14 @@ c   point print statement (internal file)
           end do
           write (*,1001) size
           write(*, 1003) no_nodes
-
- 1000 format(/,' NAS Parallel Benchmarks 3.2 -- EP Benchmark',/)
+          
+ 1000     format(/,' NAS Parallel Benchmarks 3.2 -- EP Benchmark',/)
  1001     format(' Number of random numbers generated: ', a15)
  1003     format(' Number of active processes:         ', i13, /)
 
-      endif
-
-      verified = .false.
+       endif
+       
+       verified = .false.
 
 c   Compute the number of "batches" of random number pairs generated 
 c   per processor. Adjust if the number of processors does not evenly 
@@ -133,7 +130,6 @@ c   divide the total number
       if (np .eq. 0) then
          write (6, 1) no_nodes, nn
  1       format ('Too many nodes:',2i6)
-c         call mpi_abort(MPI_COMM_WORLD,ierrcode,ierr)
          stop
       endif
 
@@ -152,7 +148,6 @@ c   sure these initializations cannot be eliminated as dead code.
 c---------------------------------------------------------------------
 c      Synchronize before placing time stamp
 c---------------------------------------------------------------------
-c      call mpi_barrier(MPI_COMM_WORLD, ierr)
       call shmem_barrier_all
       
       call timer_clear(1)
@@ -264,8 +259,6 @@ c        vectorizable.
       call timer_stop(1)
       tm  = timer_read(1)
 
-c      call mpi_allreduce(tm, x, 1, dp_type,
-c     >                   MPI_MAX, MPI_COMM_WORLD, ierr)
 
       call shmem_barrier_all();
       call shmem_real8_max_to_all(x,tm,1,0,0,no_nodes,pwrk,psync)
@@ -321,7 +314,5 @@ c     >                   MPI_MAX, MPI_COMM_WORLD, ierr)
           print *, 'Gaussian pairs: ', timer_read(2)
           print *, 'Random numbers: ', timer_read(3)
       endif
-
-c      call mpi_finalize(ierr)
 
       end
