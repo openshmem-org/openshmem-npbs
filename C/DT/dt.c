@@ -107,8 +107,10 @@ void c_print_results( char   *name,
                       int    passed_verification,
                       char   *npbversion,
                       char   *compiletime,
-                      char   *mpicc,
+                      char   *shmemcc,
                       char   *clink,
+                      char   *cshmem_lib,
+                      char   *cshmem_inc,
                       char   *cmpi_lib,
                       char   *cmpi_inc,
                       char   *cflags,
@@ -842,13 +844,14 @@ int main(int argc,char **argv ){
         	       verified,
         	       NPBVERSION,
         	       COMPILETIME,
-        	       MPICC,
+        	       SHMEMCC,
         	       CLINK,
+        	       CSHMEM_LIB,
+        	       CSHMEM_INC,
         	       CMPI_LIB,
         	       CMPI_INC,
         	       CFLAGS,
         	       CLINKFLAGS );
     }          
-    //MPI_Finalize();
   return 1;
 }

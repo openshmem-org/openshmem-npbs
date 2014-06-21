@@ -877,10 +877,10 @@ setparams: File %s doesn't exist. To build the NAS benchmarks\n\
     /* yes, this is inefficient. but it's simple! */
     check_line(line, "SHMEMF77", shmemf77);
     check_line(line, "FLINK", flink);
-    check_line(line, "FMPI_LIB", fmpi_lib);
-    check_line(line, "FMPI_INC", fmpi_inc);
     check_line(line, "FSHMEM_LIB", fshmem_lib);
     check_line(line, "FSHMEM_INC", fshmem_inc);
+    check_line(line, "FMPI_LIB", fmpi_lib);
+    check_line(line, "FMPI_INC", fmpi_inc);
     check_line(line, "FFLAGS", fflags);
     check_line(line, "FLINKFLAGS", flinkflags);
     check_line(line, "RAND", randfile);
@@ -888,10 +888,10 @@ setparams: File %s doesn't exist. To build the NAS benchmarks\n\
     check_line(line, "CFLAGS", cflags);
     check_line(line, "CLINK", clink);
     check_line(line, "CLINKFLAGS", clinkflags);
-    check_line(line, "CMPI_LIB", cmpi_lib);
-    check_line(line, "CMPI_INC", cmpi_inc);
     check_line(line, "CSHMEM_LIB", cshmem_lib);
     check_line(line, "CSHMEM_INC", cshmem_inc);
+    check_line(line, "CMPI_LIB", cmpi_lib);
+    check_line(line, "CMPI_INC", cmpi_inc);
     /* if the dummy library is used by including make.dummy, we set the
        Fortran and C paths to libraries and headers accordingly     */
     if(check_include_line(line, "../config/make.dummy")) {
@@ -934,10 +934,10 @@ setparams: File %s doesn't exist. To build the NAS benchmarks\n\
           put_def_string(fp, "CFLAGS", cflags);
           put_def_string(fp, "CLINK", clink);
           put_def_string(fp, "CLINKFLAGS", clinkflags);
-          put_def_string(fp, "CMPI_LIB", cmpi_lib);
-          put_def_string(fp, "CMPI_INC", cmpi_inc);
           put_def_string(fp, "CSHMEM_LIB", cshmem_lib);
           put_def_string(fp, "CSHMEM_INC", cshmem_inc);
+          put_def_string(fp, "CMPI_LIB", cmpi_lib);
+          put_def_string(fp, "CMPI_INC", cmpi_inc);
           put_def_string(fp, "CRANDFILE", randfile);
           break;
       default:
