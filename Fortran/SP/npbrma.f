@@ -24,7 +24,6 @@ c---------------------------------------------------------------------
       double precision :: in_buffer(BUF_SIZE)
       integer :: buffoff(3), buff_id
 
-c      double precision :: out_buffer(BUF_SIZE+BUF_SIZZ*3)
       double precision, save :: out_buffer(BUF_SIZE+BUF_SIZZ*3)
 
       integer :: win, group, pred_group(3), succ_group(3)

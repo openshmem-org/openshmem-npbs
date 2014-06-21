@@ -18,7 +18,7 @@ c---------------------------------------------------------------------
 
 
        integer i, j, k, jp, kp, n, iend, jsize, ksize, i1, i2,
-     >         buffer_size, c, m, p, istart, stage, p0, nid, error
+     >         buffer_size, c, m, p, istart, stage, p0, nid
        double precision  r1, r2, d, e, s(5), sm1, sm2,
      >                   fac1, fac2
 
@@ -57,24 +57,19 @@ c---------------------------------------------------------------------
 
 c---------------------------------------------------------------------
 c            if this is not the first processor in this row of cells, 
-c            receive data from predecessor containing the right hand
+c            get data from predecessor containing the right hand
 c            sides and the upper diagonal elements of the previous two rows
 c---------------------------------------------------------------------
-c             if (timeron) call timer_start(t_xcomm)
-c             notify_team(predecessor(1))
-c             if (timeron) call timer_stop(t_xcomm)
-
 
 c---------------------------------------------------------------------
-c            communication has already been started. 
-c            compute the left hand side while waiting for the msg
+c            compute the left hand side
 c---------------------------------------------------------------------
              call lhsx(c)
 
 c---------------------------------------------------------------------
-c            wait for pending communication to complete
-c            This waits on the current receive and on the send
-c            from the previous stage. They always come in pairs. 
+c            initiate and wait for communication to complete
+c            This gets data computed from the previous stage. They
+c            always come in pairs.
 c---------------------------------------------------------------------
 
              if (timeron) call timer_start(t_xcomm)
@@ -82,14 +77,10 @@ c---------------------------------------------------------------------
       	     p0   = buffoff(buff_id)
       	     buff_id = 3 - buff_id
              disp = p0
-c             call mpi_get(in_buffer, 22*buffer_size, dp_type, 
-c     >          nid, disp, 22*buffer_size, dp_type, win, error)
              call shmem_barrier_all()
              call shmem_double_get(in_buffer,
      >            out_buffer(disp+1), 22*buffer_size, nid)
 
-c             call mpi_win_fence(MPI_MODE_NOSUCCEED, win, error)
-c             call shmem_barrier_all()
              if (timeron) call timer_stop(t_xcomm)
 
 c---------------------------------------------------------------------
@@ -303,7 +294,7 @@ c---------------------------------------------------------------------
        end do
 
 c---------------------------------------------------------------------
-c         send information to the next processor, except when this
+c         compute information for the next processor, except when this
 c         is the last grid block
 c---------------------------------------------------------------------
           if (stage .ne. ncells) then
@@ -344,15 +335,6 @@ c---------------------------------------------------------------------
                 end do
              end do
 
-c---------------------------------------------------------------------
-c send data to next phase
-c can't receive data yet because buffer size will be wrong 
-c---------------------------------------------------------------------
-             if (timeron) call timer_start(t_xcomm)
-c             call mpi_win_fence(MPI_MODE_NOPUT+MPI_MODE_NOPRECEDE, 
-c     &          win, error)
-             if (timeron) call timer_stop(t_xcomm)
-
           endif
        end do
 
@@ -380,25 +362,19 @@ c---------------------------------------------------------------------
           if (stage .ne. ncells) then
 
 c---------------------------------------------------------------------
-c            if this is not the starting cell in this row of cells, 
-c            wait for a message to be received, containing the 
-c            solution of the previous two stations     
-c---------------------------------------------------------------------
-c             if (timeron) call timer_start(t_xcomm)
-c             notify_team(successor(1))
-c             if (timeron) call timer_stop(t_xcomm)
-
-
-c---------------------------------------------------------------------
-c            communication has already been started
-c            while waiting, do the block-diagonal inversion for the 
-c            cell that was just finished                
+c            if this is not the starting cell in this row of cells,
+c            we will get the data containing the solution of the
+c            previous two stations
 c---------------------------------------------------------------------
 
+c---------------------------------------------------------------------
+c            do the block-diagonal inversion for the cell that was
+c            just finished
+c---------------------------------------------------------------------
              call ninvr(slice(1,stage+1))
 
 c---------------------------------------------------------------------
-c            wait for pending communication to complete
+c            initiate and wait for communication to complete
 c---------------------------------------------------------------------
              if (timeron) call timer_start(t_xcomm)
              nid = successor(1)
@@ -406,12 +382,8 @@ c---------------------------------------------------------------------
              buff_id = 3 - buff_id
              disp = p0
              call shmem_barrier_all()
-c             call mpi_get(in_buffer, 10*buffer_size, dp_type, 
-c     >          nid, disp, 10*buffer_size, dp_type, win, error)
              call shmem_double_get(in_buffer,
      >            out_buffer(disp+1), 10*buffer_size, nid)
-c             call mpi_win_fence(MPI_MODE_NOSUCCEED, win, error)
-c             call shmem_barrier_all()
              if (timeron) call timer_stop(t_xcomm)
 
 c---------------------------------------------------------------------
@@ -548,18 +520,10 @@ c---------------------------------------------------------------------
                 end do
              end do
 
-c---------------------------------------------------------------------
-c            pack and send the buffer
-c---------------------------------------------------------------------
-             if (timeron) call timer_start(t_xcomm)
-c             call mpi_win_fence(MPI_MODE_NOPUT+MPI_MODE_NOPRECEDE,
-c     &          win, error)
-             if (timeron) call timer_stop(t_xcomm)
-
           endif
 
 c---------------------------------------------------------------------
-c         If this was the last stage, do the block-diagonal inversion          
+c         If this was the last stage, do the block-diagonal inversion
 c---------------------------------------------------------------------
           if (stage .eq. 1) call ninvr(c)
 
@@ -569,9 +533,6 @@ c---------------------------------------------------------------------
 
        return
        end
-    
-
-
 
 
 

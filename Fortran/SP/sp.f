@@ -1,24 +1,24 @@
 c  Copyright (c) 2011 - 2014
 c    University of Houston System and Oak Ridge National Laboratory.
-c  
+c
 c  All rights reserved.
-c  
+c
 c  Redistribution and use in source and binary forms, with or without
 c  modification, are permitted provided that the following conditions
 c  are met:
-c  
+c
 c  o Redistributions of source code must retain the above copyright notice,
 c    this list of conditions and the following disclaimer.
-c  
+c
 c  o Redistributions in binary form must reproduce the above copyright
 c    notice, this list of conditions and the following disclaimer in the
 c    documentation and/or other materials provided with the distribution.
-c  
+c
 c  o Neither the name of the University of Houston System, Oak Ridge
 c    National Laboratory nor the names of its contributors may be used to
 c    endorse or promote products derived from this software without specific
 c    prior written permission.
-c  
+c
 c  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
 c  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
 c  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -30,30 +30,25 @@ c  PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
 c  LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
 c  NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 c  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-c  
+c
 
 c---------------------------------------------------------------------
        program MPSP
 c---------------------------------------------------------------------
 
        include  'header.h'
-c      X-1
        include 'mpp/shmem.fh'
 
-       integer          i, step, c, fstatus, error
-c       X-1
+       integer          i, step, c, fstatus
        integer, save::niter
 
        external timer_read
-c       double precision mflops, t, tmax, timer_read
        double precision mflops, timer_read
        double precision, save::t
        double precision, save::tmax
 
        logical          verified
        character        class
-c       double precision tsum(t_last+2), t1(t_last+2),
-c     >                  tming(t_last+2), tmaxg(t_last+2)
        double precision, save:: t1(t_last+2)
        double precision, save:: tsum(t_last+2)
        double precision, save:: tming(t_last+2)
@@ -64,7 +59,6 @@ c     >                  tming(t_last+2), tmaxg(t_last+2)
      >             'bpack', 'exch', 'xcomm', 'ycomm', 'zcomm',
      >             ' totcomp', ' totcomm'/
 
-c     X-1
       integer, dimension(SHMEM_BCAST_SYNC_SIZE), save :: psync
       integer, dimension(SHMEM_BCAST_SYNC_SIZE), save :: psync1
       integer, dimension(SHMEM_BCAST_SYNC_SIZE), save :: psync2
@@ -73,7 +67,6 @@ c     X-1
 
        call setup_rma
 
-c      X-1
        psync = SHMEM_SYNC_VALUE
        psync1 = SHMEM_SYNC_VALUE
        psync2 = SHMEM_SYNC_VALUE
@@ -86,7 +79,7 @@ c      Root node reads input file (if it exists) else takes
 c      defaults from parameters
 c---------------------------------------------------------------------
        if (node .eq. root) then
-          
+
           write(*, 1000)
 
           open (unit=2,file='timer.flag',status='old',iostat=fstatus)
@@ -132,24 +125,16 @@ c
        endif
 
 c ...  broadcast input parameters
-c       call mpi_bcast(niter, 1, MPI_INTEGER,
-c     >                root, comm_setup, error)
       call shmem_broadcast4(niter, niter, 1, 0, 0, 0, no_nodes, psync1)
 
-c       call mpi_bcast(dt, 1, dp_type, 
-c     >                root, comm_setup, error)
       call shmem_broadcast8(dt, dt, 1, 0, 0, 0, no_nodes, psync2)
 
-c       call mpi_bcast(grid_points, 3, MPI_INTEGER, 
-c     >                root, comm_setup, error)
       call shmem_broadcast4(grid_points, grid_points, 3, 0, 0, 0,
      >                      no_nodes, psync1)
 
-c       call mpi_bcast(timeron, 1, MPI_LOGICAL,
-c     >                root, comm_setup, error)
       call shmem_broadcast4(timeron,timeron,1,0,0,0,no_nodes,psync2)
 
-       call make_set
+      call make_set
 
        do  c = 1, ncells
           if ( (cell_size(1,c) .gt. IMAX) .or.
@@ -187,8 +172,7 @@ c---------------------------------------------------------------------
        do  i = 1, t_last
           call timer_clear(i)
        end do
-c       call mpi_barrier(comm_setup, error)
-      call shmem_barrier_all()
+       call shmem_barrier_all()
 
        call timer_clear(1)
        call timer_start(1)
@@ -212,9 +196,6 @@ c       call mpi_barrier(comm_setup, error)
        
        call verify(niter, class, verified)
 
-c       call mpi_reduce(t, tmax, 1, 
-c     >                 dp_type, MPI_MAX, 
-c     >                 root, comm_setup, error)
        call shmem_real8_max_to_all(tmax,t,1,0,0,no_nodes,pwrk,psync)
 
        if( node .eq. root ) then
@@ -245,17 +226,11 @@ c     >                 root, comm_setup, error)
        t1(t_last+2) = t1(t_xcomm)+t1(t_ycomm)+t1(t_zcomm)+t1(t_exch)
        t1(t_last+1) = t1(t_total)  - t1(t_last+2)
 
-c       call mpi_reduce(t1, tsum, t_last+2, 
-c     >                 dp_type, MPI_SUM, root, comm_setup, error)
       call shmem_real8_sum_to_all(tsum,t1,t_last+2,0,0,
      >                            no_nodes,pwrk,psync)
-c       call mpi_reduce(t1, tming, t_last+2, 
-c     >                 dp_type, MPI_MIN, root, comm_setup, error)
       call shmem_real8_min_to_all(tming,t1,t_last+2,0,0,
      >                            no_nodes,pwrk,psync)
 
-c       call mpi_reduce(t1, tmaxg, t_last+2, 
-c     >                 dp_type, MPI_MAX, root, comm_setup, error)
       call shmem_real8_max_to_all(tmaxg,t1,t_last+2,0,0,
      >                            no_nodes,pwrk,psync)
 
@@ -271,9 +246,6 @@ c     >                 dp_type, MPI_MAX, root, comm_setup, error)
  810   format(' timer ', i2, '(', A8, ') :', 3(2x,f10.4))
 
  999   continue
-c       call mpi_barrier(MPI_COMM_WORLD, error)
        call shmem_barrier_all()
-c       if (active) call mpi_win_free(win, error)
-c       call mpi_finalize(error)
 
        end
