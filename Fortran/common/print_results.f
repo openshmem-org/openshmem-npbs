@@ -1,8 +1,8 @@
 
       subroutine print_results(name, class, n1, n2, n3, niter, 
      >               nprocs_compiled, nprocs_total,
-     >               t, mops, optype, verified, npbversion, 
-     >               compiletime, cs1, cs2, cs3, cs4, cs5, cs6, cs7)
+     >               t, mops, optype, verified, npbversion, compiletime, 
+     >               cs1, cs2, cs3, cs8, cs9, cs4, cs5, cs6, cs7)
       
       implicit none
       character*2 name
@@ -12,7 +12,7 @@
       character optype*24, size*14
       logical verified
       character*(*) npbversion, compiletime, 
-     >              cs1, cs2, cs3, cs4, cs5, cs6, cs7
+     >              cs1, cs2, cs3, cs4, cs5, cs6, cs7, cs8, cs9
 
          write (*, 2) name 
  2       format(//, ' ', A2, ' Benchmark Completed.')
@@ -79,25 +79,31 @@ c   Otherwise, we print the grid size n1xn2xn3
 
          write (*,121) cs1
  121     format(/, ' Compile options:', /, 
-     >          '    MPIF77       = ', A)
+     >          '    SHMEMF77       = ', A)
 
          write (*,122) cs2
  122     format('    FLINK        = ', A)
 
          write (*,123) cs3
- 123     format('    FMPI_LIB     = ', A)
+ 123     format('    FSHMEM_LIB     = ', A)
 
-         write (*,124) cs4
- 124     format('    FMPI_INC     = ', A)
+         write (*,124) cs8
+ 124     format('    FSHMEM_INC     = ', A)
 
-         write (*,125) cs5
- 125     format('    FFLAGS       = ', A)
+         write (*,125) cs9
+ 125     format('    FMPI_LIB     = ', A)
 
-         write (*,126) cs6
- 126     format('    FLINKFLAGS   = ', A)
+         write (*,126) cs4
+ 126     format('    FMPI_INC     = ', A)
 
-         write(*, 127) cs7
- 127     format('    RAND         = ', A)
+         write (*,127) cs5
+ 127     format('    FFLAGS       = ', A)
+
+         write (*,128) cs6
+ 128     format('    FLINKFLAGS   = ', A)
+
+         write(*, 129) cs7
+ 129     format('    RAND         = ', A)
         
          write (*,130)
  130     format(//' Please send the results of this run to:'//

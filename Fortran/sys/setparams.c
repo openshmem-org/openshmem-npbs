@@ -841,10 +841,10 @@ void write_compiler_info(int type, FILE *fp)
 {
   FILE *deffile;
   char line[LL];
-  char mpif77[LL], flink[LL], fmpi_lib[LL], fmpi_inc[LL], fflags[LL], flinkflags[LL];
+  char shmemf77[LL], flink[LL], fmpi_lib[LL], fmpi_inc[LL], fshmem_lib[LL], fshmem_inc[LL], fflags[LL], flinkflags[LL];
   char compiletime[LL], randfile[LL];
-  char mpicc[LL], cflags[LL], clink[LL], clinkflags[LL],
-       cmpi_lib[LL], cmpi_inc[LL];
+  char shmemcc[LL], cflags[LL], clink[LL], clinkflags[LL],
+    cmpi_lib[LL], cmpi_inc[LL], cshmem_lib[LL], cshmem_inc[LL];;
   struct tm *tmp;
   time_t t;
   deffile = fopen(DEFFILE, "r");
@@ -856,34 +856,42 @@ setparams: File %s doesn't exist. To build the NAS benchmarks\n\
            the file config/make.def.template\n", DEFFILE);
     exit(1);
   }
-  strcpy(mpif77, DEFAULT_MESSAGE);
+  strcpy(shmemf77, DEFAULT_MESSAGE);
   strcpy(flink, DEFAULT_MESSAGE);
+  strcpy(fshmem_lib, DEFAULT_MESSAGE);
+  strcpy(fshmem_inc, DEFAULT_MESSAGE);
   strcpy(fmpi_lib, DEFAULT_MESSAGE);
   strcpy(fmpi_inc, DEFAULT_MESSAGE);
   strcpy(fflags, DEFAULT_MESSAGE);
   strcpy(flinkflags, DEFAULT_MESSAGE);
   strcpy(randfile, DEFAULT_MESSAGE);
-  strcpy(mpicc, DEFAULT_MESSAGE);
+  strcpy(shmemcc, DEFAULT_MESSAGE);
   strcpy(cflags, DEFAULT_MESSAGE);
   strcpy(clink, DEFAULT_MESSAGE);
   strcpy(clinkflags, DEFAULT_MESSAGE);
+  strcpy(cshmem_lib, DEFAULT_MESSAGE);
+  strcpy(cshmem_inc, DEFAULT_MESSAGE);
   strcpy(cmpi_lib, DEFAULT_MESSAGE);
   strcpy(cmpi_inc, DEFAULT_MESSAGE);
-
+  
   while (fgets(line, LL, deffile) != NULL) {
     if (*line == '#') continue;
     /* yes, this is inefficient. but it's simple! */
-    check_line(line, "MPIF77", mpif77);
+    check_line(line, "SHMEMF77", shmemf77);
     check_line(line, "FLINK", flink);
+    check_line(line, "FSHMEM_LIB", fshmem_lib);
+    check_line(line, "FSHMEM_INC", fshmem_inc);
     check_line(line, "FMPI_LIB", fmpi_lib);
     check_line(line, "FMPI_INC", fmpi_inc);
     check_line(line, "FFLAGS", fflags);
     check_line(line, "FLINKFLAGS", flinkflags);
     check_line(line, "RAND", randfile);
-    check_line(line, "MPICC", mpicc);
+    check_line(line, "SHMEMCC", shmemcc);
     check_line(line, "CFLAGS", cflags);
     check_line(line, "CLINK", clink);
     check_line(line, "CLINKFLAGS", clinkflags);
+    check_line(line, "CSHMEM_LIB", cshmem_lib);
+    check_line(line, "CSHMEM_INC", cshmem_inc);
     check_line(line, "CMPI_LIB", cmpi_lib);
     check_line(line, "CMPI_INC", cmpi_inc);
     /* if the dummy library is used by including make.dummy, we set the
@@ -912,8 +920,10 @@ setparams: File %s doesn't exist. To build the NAS benchmarks\n\
       case CG:
           put_string(fp, "compiletime", compiletime);
           put_string(fp, "npbversion", VERSION);
-          put_string(fp, "cs1", mpif77);
+          put_string(fp, "cs1", shmemf77);
           put_string(fp, "cs2", flink);
+          put_string(fp, "cs8", fshmem_lib);
+          put_string(fp, "cs9", fshmem_inc);
           put_string(fp, "cs3", fmpi_lib);
           put_string(fp, "cs4", fmpi_inc);
           put_string(fp, "cs5", fflags);
@@ -924,10 +934,12 @@ setparams: File %s doesn't exist. To build the NAS benchmarks\n\
       case DT:
           put_def_string(fp, "COMPILETIME", compiletime);
           put_def_string(fp, "NPBVERSION", VERSION);
-          put_def_string(fp, "MPICC", mpicc);
+          put_def_string(fp, "SHMEMCC", shmemcc);
           put_def_string(fp, "CFLAGS", cflags);
           put_def_string(fp, "CLINK", clink);
           put_def_string(fp, "CLINKFLAGS", clinkflags);
+          put_def_string(fp, "CSHMEM_LIB", cshmem_lib);
+          put_def_string(fp, "CSHMEM_INC", cshmem_inc);
           put_def_string(fp, "CMPI_LIB", cmpi_lib);
           put_def_string(fp, "CMPI_INC", cmpi_inc);
           break;

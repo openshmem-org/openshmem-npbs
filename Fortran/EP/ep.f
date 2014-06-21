@@ -354,7 +354,7 @@ c        vectorizable.
      >                      no_nodes, tm, Mops, 
      >                      'Random numbers generated', 
      >                      verified, npbversion, compiletime, cs1,
-     >                      cs2, cs3, cs4, cs5, cs6, cs7)
+     >                      cs2, cs3, cs4, cs8, cs9, cs5, cs6, cs7)
 
       endif
 

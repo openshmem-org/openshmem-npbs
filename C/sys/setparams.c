@@ -855,10 +855,10 @@ setparams: File %s doesn't exist. To build the NAS benchmarks\n\
   }
   strcpy(shmemf77, DEFAULT_MESSAGE);
   strcpy(flink, DEFAULT_MESSAGE);
-  strcpy(fmpi_lib, DEFAULT_MESSAGE);
-  strcpy(fmpi_inc, DEFAULT_MESSAGE);
   strcpy(fshmem_lib, DEFAULT_MESSAGE);
   strcpy(fshmem_inc, DEFAULT_MESSAGE);
+  strcpy(fmpi_lib, DEFAULT_MESSAGE);
+  strcpy(fmpi_inc, DEFAULT_MESSAGE);
   strcpy(fflags, DEFAULT_MESSAGE);
   strcpy(flinkflags, DEFAULT_MESSAGE);
   strcpy(randfile, DEFAULT_MESSAGE);
@@ -868,6 +868,9 @@ setparams: File %s doesn't exist. To build the NAS benchmarks\n\
   strcpy(clinkflags, DEFAULT_MESSAGE);
   strcpy(cshmem_lib, DEFAULT_MESSAGE);
   strcpy(cshmem_inc, DEFAULT_MESSAGE);
+  strcpy(cmpi_lib, DEFAULT_MESSAGE);
+  strcpy(cmpi_inc, DEFAULT_MESSAGE);
+
 
   while (fgets(line, LL, deffile) != NULL) {
     if (*line == '#') continue;
