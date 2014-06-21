@@ -14,9 +14,9 @@ c---------------------------------------------------------------------
         include 'header.h'
 
         double precision xcrref(5),xceref(5),xcrdif(5),xcedif(5),
-     >                   epsilon, xcr(5), dtref
+     >                   epsilon, dtref
       
-c       X-1
+        double precision, save :: xcr(5)
         double precision, save :: xce(5)
         integer m, no_time_steps
         character class

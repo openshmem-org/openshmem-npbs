@@ -24,7 +24,7 @@ c     X-1
       double precision, save:: rms_work(5)
 
 c     X-1
-      integer, dimension(SHMEM_BCAST_SYNC_SIZE), save :: psync1
+      integer, dimension(SHMEM_REDUCE_SYNC_SIZE), save :: psync1
       double precision, dimension(SHMEM_REDUCE_MIN_WRKDATA_SIZE),
      > save :: pwrk1
 
@@ -92,7 +92,7 @@ c      double precision rms(5), rms_work(5), add
       double precision rms(5)
       double precision, save:: rms_work(5)
 c     X-1
-      integer, dimension(SHMEM_BCAST_SYNC_SIZE), save :: psync1
+      integer, dimension(SHMEM_REDUCE_SYNC_SIZE), save :: psync1
       double precision, dimension(SHMEM_REDUCE_MIN_WRKDATA_SIZE),
      > save :: pwrk1
 

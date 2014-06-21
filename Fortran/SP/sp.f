@@ -105,7 +105,7 @@ c---------------------------------------------------------------------
      >             'bpack', 'exch', 'xcomm', 'ycomm', 'zcomm',
      >             ' totcomp', ' totcomm'/
 
-      integer, dimension(SHMEM_BCAST_SYNC_SIZE), save :: psync
+      integer, dimension(SHMEM_REDUCE_SYNC_SIZE), save :: psync
       integer, dimension(SHMEM_BCAST_SYNC_SIZE), save :: psync1
       integer, dimension(SHMEM_BCAST_SYNC_SIZE), save :: psync2
       double precision, dimension(SHMEM_REDUCE_MIN_WRKDATA_SIZE),
