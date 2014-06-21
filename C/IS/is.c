@@ -144,7 +144,7 @@ typedef  int  INT_TYPE;
 
 
 /********************/
-/* MPI properties:  */
+/* SHMEM properties:  */
 /********************/
 int      my_rank,
          comm_size;
@@ -444,10 +444,7 @@ void	create_seq( double seed, double a )
 INT_TYPE    k;
 
 void full_verify()
-{
-    //MPI_Status  status;
-    //MPI_Request request;
-    
+{    
     INT_TYPE    i, j;
 
     
@@ -457,12 +454,6 @@ void full_verify()
                                  total_lesser_keys] = key_buff2[i];
 
 /*  Send largest key value to next processor  */
-    /*if( my_rank > 0 )
-        MPI_Irecv( &k, 1, MPI_INT, my_rank-1, 1000, MPI_COMM_WORLD, &request );                   
-    if( my_rank < comm_size-1 )
-        MPI_Send( &key_array[total_local_keys-1], 1, MPI_INT, my_rank+1, 1000, MPI_COMM_WORLD );
-    if( my_rank > 0 )
-        MPI_Wait( &request, &status );*/
     if( my_rank < comm_size-1 )
 	shmem_int_put(&k,&key_array[total_local_keys-1],1,my_rank+1);
     shmem_barrier_all();
@@ -568,7 +559,6 @@ void rank( int iteration )
     will be used to determine the redistribution of keys      */
     //shmem_barrier_all();
     shmem_int_sum_to_all(bucket_size_totals,bucket_size,NUM_BUCKETS+TEST_ARRAY_SIZE,0,0,comm_size,ipWrk,pSync);
-    //MPI_Allreduce( bucket_size, bucket_size_totals, NUM_BUCKETS+TEST_ARRAY_SIZE, MPI_INT, MPI_SUM, MPI_COMM_WORLD );
 
 #ifdef  TIMING_ENABLED
     timer_stop( 3 );
@@ -619,8 +609,6 @@ void rank( int iteration )
 
 /*  This is the redistribution section:  first find out how many keys
     each processor will send to every other processor:                 */
-    //MPI_Alltoall( send_count, 1, MPI_INT, recv_count, 1, MPI_INT, MPI_COMM_WORLD );
-    // 
     shmem_barrier_all();
     int len=1,other,j1;
     for(j1=0;j1<comm_size;j1++){
@@ -635,7 +623,6 @@ void rank( int iteration )
 
 
 /*  Now send the keys to respective processors  */    
-    //MPI_Alltoallv( key_buff1, send_count, send_displ, MPI_INT, key_buff2, recv_count, recv_displ, MPI_INT, MPI_COMM_WORLD );
     shmem_barrier_all();
     for(j1=0;j1<comm_size;j1++){
 		int k1 = send_displ[j1]; // sender displ index changes each iteration, but local copy of sender
@@ -867,10 +854,6 @@ main( argc, argv )
 
 
 
-/*  Initialize MPI */
-    //MPI_Init( &argc, &argv );
-    //MPI_Comm_rank( MPI_COMM_WORLD, &my_rank );
-    //MPI_Comm_size( MPI_COMM_WORLD, &comm_size );
     start_pes(0);
     comm_size = _num_pes();
     my_rank = _my_pe();
@@ -913,7 +896,6 @@ main( argc, argv )
             printf( "\n ERROR: compiled for %d processes\n"
                     " Number of active processes: %d\n"
                     " Exiting program!\n\n", NUM_PROCS, comm_size );
-        //MPI_Finalize();
         exit( 1 );
     }
 
@@ -925,7 +907,6 @@ main( argc, argv )
        if( my_rank == 0 )
            printf( "\n ERROR: number of processes %d exceeds maximum %d"
                    "\n Exiting program!\n\n", comm_size,  MAX_PROCS);
-       //MPI_Finalize();
        exit( 1 );
     }
 
@@ -993,7 +974,6 @@ main( argc, argv )
 /*  End of timing, obtain maximum time of all processors */
     shmem_barrier_all();
     shmem_double_max_to_all(&maxtime,&timecounter,1,0,0,comm_size,pWrk,pSync);
-    /*MPI_Reduce( &timecounter, &maxtime, 1, MPI_DOUBLE, MPI_MAX, 0, MPI_COMM_WORLD );*/
 #ifdef  TIMING_ENABLED
     {
     
@@ -1009,9 +989,6 @@ main( argc, argv )
             shmem_double_min_to_all(&tmin,&timecounter,1,0,0,comm_size,pWrk,pSync);
             shmem_double_sum_to_all(&tsum,&timecounter,1,0,0,comm_size,pWrk,pSync);
             shmem_double_max_to_all(&tmax,&timecounter,1,0,0,comm_size,pWrk,pSync);
-            //MPI_Reduce( &timecounter, &tmin, 1, MPI_DOUBLE, MPI_MIN, 0, MPI_COMM_WORLD );
-            //MPI_Reduce( &timecounter, &tsum, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD );
-            //MPI_Reduce( &timecounter, &tmax, 1, MPI_DOUBLE, MPI_MAX, 0, MPI_COMM_WORLD );
             if( my_rank == 0 )
                 printf( "timer %d:    %f           %f            %f\n",
                         i, tmin, tsum/((double) comm_size), tmax );
@@ -1030,7 +1007,6 @@ main( argc, argv )
     itemp = passed_verification;
     shmem_barrier_all();
     shmem_int_sum_to_all(&passed_verification,&itemp,1,0,0,comm_size,ipWrk,pSync);
-    //MPI_Reduce( &itemp, &passed_verification, 1, MPI_INT, MPI_SUM, 0, MPI_COMM_WORLD );
 
 /*  The final printout  */
     if( my_rank == 0 )
@@ -1060,7 +1036,6 @@ main( argc, argv )
                          CLINKFLAGS );
     }
                     
-    //MPI_Finalize();
 
 
          /**************************/
