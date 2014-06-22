@@ -64,13 +64,13 @@ void c_print_results( char   *name,
 
     printf( "\n Compile options:\n" );
 
-    printf( "    SHMEMCC        = %s\n", shmemcc );
+    printf( "    SHMEMCC      = %s\n", shmemcc );
 
     printf( "    CLINK        = %s\n", clink );
 
-    printf( "    CSHMEM_LIB     = %s\n", cshmem_lib );
+    printf( "    CSHMEM_LIB   = %s\n", cshmem_lib );
 
-    printf( "    CSHMEM_INC     = %s\n", cshmem_inc );
+    printf( "    CSHMEM_INC   = %s\n", cshmem_inc );
 
     printf( "    CMPI_LIB     = %s\n", cmpi_lib );
 

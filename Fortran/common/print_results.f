@@ -79,16 +79,16 @@ c   Otherwise, we print the grid size n1xn2xn3
 
          write (*,121) cs1
  121     format(/, ' Compile options:', /, 
-     >          '    SHMEMF77       = ', A)
+     >          '    SHMEMF77     = ', A)
 
          write (*,122) cs2
  122     format('    FLINK        = ', A)
 
          write (*,123) cs3
- 123     format('    FSHMEM_LIB     = ', A)
+ 123     format('    FSHMEM_LIB   = ', A)
 
          write (*,124) cs8
- 124     format('    FSHMEM_INC     = ', A)
+ 124     format('    FSHMEM_INC   = ', A)
 
          write (*,125) cs9
  125     format('    FMPI_LIB     = ', A)
