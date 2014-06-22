@@ -155,7 +155,7 @@ c     all i and j
 c---------------------------------------------------------------------
       include 'header.h'
 
-      integer i,j,m,n,ksize,ptr,c,error
+      integer i,j,m,n,ksize,ptr,c
 
       ksize = cell_size(3,c)-1
 
@@ -202,7 +202,7 @@ c     pack up and send U(jstart) for all i and j
 c---------------------------------------------------------------------
       include 'header.h'
 
-      integer i,j,n,ptr,c,kstart,error
+      integer i,j,n,ptr,c,kstart
 
       if (timeron) call timer_start(t_zcomm)
 c---------------------------------------------------------------------
@@ -268,7 +268,7 @@ c     post receives
 c---------------------------------------------------------------------
       include 'header.h'
 
-      integer c,buffer_size,p0,error
+      integer c,buffer_size,p0
       buffer_size=MAX_CELL_DIM*MAX_CELL_DIM*BLOCK_SIZE
       p0 = buffoff(buff_id)
       buff_id = 3 - buff_id
@@ -293,7 +293,7 @@ c     post receives
 c---------------------------------------------------------------------
       include 'header.h'
 
-      integer c,buffer_size,p0,error
+      integer c,buffer_size,p0
       buffer_size=MAX_CELL_DIM*MAX_CELL_DIM*
      >     (BLOCK_SIZE*BLOCK_SIZE + BLOCK_SIZE)
       p0 = buffoff(buff_id)

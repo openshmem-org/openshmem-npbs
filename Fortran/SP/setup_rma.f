@@ -16,19 +16,12 @@ c---------------------------------------------------------------------
       include 'mpp/shmem.fh'
 
       integer num_pes, my_pe
-      integer i, error, nc, color
-      integer(kind=mpi_address_kind) lb, dp_size
+      integer nc, color
 
       call start_pes(0)
       total_nodes = num_pes()
       node = my_pe()
       no_nodes = num_pes()
-
-      if (.not. convertdouble) then
-         dp_type = MPI_DOUBLE_PRECISION
-      else
-         dp_type = MPI_REAL
-      endif
 
 c---------------------------------------------------------------------
 c     compute square root; add small number to allow for roundoff

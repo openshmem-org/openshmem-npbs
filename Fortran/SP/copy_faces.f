@@ -19,7 +19,7 @@ c---------------------------------------------------------------------
 
        include 'header.h'
 
-       integer i, j, k, c, m, p0, p1, error,
+       integer i, j, k, c, m, p0, p1,
      >         p2, p3, p4, p5, b_size(0:5), ss(0:5), 
      >         sr(0:5), sr_n(0:5)
 

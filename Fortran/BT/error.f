@@ -14,9 +14,7 @@ c---------------------------------------------------------------------
       include 'header.h'
       include 'mpp/shmem.fh'
 
-      integer c, i, j, k, m, ii, jj, kk, d, error
-c      double precision xi, eta, zeta, u_exact(5), rms(5), rms_work(5),
-c     >     add
+      integer c, i, j, k, m, ii, jj, kk, d
       double precision xi, eta, zeta, u_exact(5), rms(5),
      >     add
       double precision, save:: rms_work(5)
@@ -81,8 +79,7 @@ c---------------------------------------------------------------------
       include 'header.h'
        include 'mpp/shmem.fh'
 
-      integer c, i, j, k, d, m, error
-c      double precision rms(5), rms_work(5), add
+      integer c, i, j, k, d, m
       double precision add
       double precision rms(5)
       double precision, save:: rms_work(5)

@@ -124,7 +124,7 @@ c---------------------------------------------------------------------------c
       double precision verify_value, err
       logical verified
 
-      integer ierr,i, fstatus
+      integer i, fstatus
       integer T_bench, T_init
       parameter (T_bench=1, T_init=2)
       double precision, dimension(SHMEM_REDUCE_MIN_WRKDATA_SIZE),
@@ -401,7 +401,7 @@ c---------------------------------------------------------------------
       integer ax, next(3),mi(3,10),mip(3,10)
       integer ng(3,10)
       integer idi(3), pi(3), idin(3,-1:1)
-      integer s, dir,ierr
+      integer s, dir
 
       do  j=-1,1,1
          do  d=1,3
@@ -1038,7 +1038,7 @@ c---------------------------------------------------------------------
       double precision a
       double precision, save::s 
       double precision, save::ss
-      integer i3, i2, i1, ierr
+      integer i3, i2, i1
 
       integer n
       integer, dimension(SHMEM_BCAST_SYNC_SIZE), save :: psync1
@@ -1213,7 +1213,7 @@ c---------------------------------------------------------------------
       include 'globals.h'
 
       integer axis, dir
-      integer buff_id,buff_len,i,ierr
+      integer buff_id,buff_len,i
 
       buff_id = 3 + dir
       buff_len = nm2
@@ -1248,7 +1248,7 @@ c---------------------------------------------------------------------
       include 'mpinpb.h'
       include 'globals.h'
 
-      integer axis, dir, n1, n2, n3, k, ierr
+      integer axis, dir, n1, n2, n3, k
       double precision u( n1, n2, n3 )
 
       integer i3, i2, i1, buff_len,buff_id,buff_id1
@@ -1371,8 +1371,6 @@ c---------------------------------------------------------------------
 
       integer buff_id, indx
 
-      integer status(mpi_status_size), ierr
-
       integer i3, i2, i1,temp
 
 
@@ -1464,7 +1462,7 @@ c---------------------------------------------------------------------
       include 'mpinpb.h'
       include 'globals.h'
 
-      integer axis, dir, n1, n2, n3, k, ierr
+      integer axis, dir, n1, n2, n3, k
       double precision u( n1, n2, n3 )
 
       integer i3, i2, i1, buff_len, buff_id,buff_id1
@@ -1592,8 +1590,6 @@ c---------------------------------------------------------------------
       double precision u( n1, n2, n3 )
 
       integer buff_id, indx
-
-      integer status(mpi_status_size) , ierr
 
       integer i3, i2, i1
 
@@ -2067,7 +2063,7 @@ c---------------------------------------------------------------------
       integer  is1, is2, is3, ie1, ie2, ie3
       common /grid/ is1,is2,is3,ie1,ie2,ie3
 
-      integer n1, n2, n3, k, nx, ny, ierr, i0, m0, m1
+      integer n1, n2, n3, k, nx, ny, i0, m0, m1
       double precision z(n1,n2,n3)
 
       integer mm, i1, i2, i3, d1, e1, e2, e3
@@ -2271,7 +2267,7 @@ c---------------------------------------------------------------------
 
       include 'mpinpb.h'
 
-      integer n1,n2,n3,i1,i2,i3,ierr
+      integer n1,n2,n3,i1,i2,i3
       double precision z(n1,n2,n3)
       integer m1, m2, m3,i
 
@@ -2310,7 +2306,7 @@ c---------------------------------------------------------------------
 
       include 'mpinpb.h'
 
-      integer n1,n2,n3,i1,i2,i3,i,ierr
+      integer n1,n2,n3,i1,i2,i3,i
       double precision z(n1,n2,n3)
       integer m1, m2, m3
 
@@ -2348,7 +2344,7 @@ c---------------------------------------------------------------------
       implicit none
 
       include 'mpinpb.h'
-      integer n1,n2,n3,i1,i2,i3,ierr,i
+      integer n1,n2,n3,i1,i2,i3,i
       double precision z(n1,n2,n3)
 
       write(*,*)'  '

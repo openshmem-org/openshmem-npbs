@@ -107,8 +107,8 @@ c   not affect the results.
       double precision sx, sy, tm
       save             sx, sy, tm
       double precision sx_verify_value, sy_verify_value, sx_err, sy_err
-      integer          mk, mm, nn, nk, nq, np, ierr, node, no_nodes, 
-     >                 i, ik, kk, l, k, nit, ierrcode, no_large_nodes,
+      integer          mk, mm, nn, nk, nq, np, node, no_nodes, 
+     >                 i, ik, kk, l, k, nit, no_large_nodes,
      >                 np_add, k_offset, j
       logical          verified, timers_enabled
       parameter       (timers_enabled = .false.)
@@ -133,12 +133,6 @@ c   not affect the results.
       call shmem_barrier_all
 
       root = 0
-
-      if (.not. convertdouble) then
-         dp_type = MPI_DOUBLE_PRECISION
-      else
-         dp_type = MPI_REAL
-      endif
 
       if (node.eq.root)  then
 
@@ -271,7 +265,7 @@ c        vectorizable.
                t2   = sqrt(-2.d0 * log(t1) / t1)
                t3   = (x1 * t2)
                t4   = (x2 * t2)
-               l    = max(abs(t3), abs(t4))
+               l    = int(max(abs(t3), abs(t4)))
                q(l) = q(l) + 1.d0
                sx   = sx + t3
                sy   = sy + t4

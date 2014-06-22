@@ -92,7 +92,7 @@ c---------------------------------------------------------------------
        include 'mpp/shmem.fh'
 
       
-       integer i, step, c, error, fstatus
+       integer i, step, c, fstatus
        integer, save::niter
        double precision navg, mflops, mbytes, n3
 

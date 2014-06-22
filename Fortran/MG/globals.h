@@ -22,8 +22,6 @@ c---------------------------------------------------------------------
 c---------------------------------------------------------------------
       integer nbr(3,-1:1,maxlevel), msg_type(3,-1:1)
       integer  msg_id(3,-1:1,2),nx(maxlevel),ny(maxlevel),nz(maxlevel)
-      integer*8, save :: flag3
-      integer*8, save ::  flag3_ex
       common /mg3/ nbr,msg_type,msg_id,nx,ny,nz
 
       character class

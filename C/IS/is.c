@@ -654,7 +654,7 @@ void rank( int iteration )
 /*  This is the redistribution section:  first find out how many keys
     each processor will send to every other processor:                 */
     shmem_barrier_all();
-    int len=1,other,j1;
+    int j1;
     for(j1=0;j1<comm_size;j1++){
 		shmem_int_put(&recv_count[my_rank],&send_count[j1],1,j1);
     }

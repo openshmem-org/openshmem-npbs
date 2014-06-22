@@ -15,7 +15,7 @@ c---------------------------------------------------------------------
       include 'header.h'
 
 
-      integer p, i, j, c, dir, size, excess, ierr
+      integer p, i, j, c, dir, size, excess
 
 c---------------------------------------------------------------------
 c     compute square root; add small number to allow for roundoff

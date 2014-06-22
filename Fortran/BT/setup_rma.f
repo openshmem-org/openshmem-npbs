@@ -17,10 +17,7 @@ c---------------------------------------------------------------------
 
       integer num_pes, my_pe
 
-      integer i, error, nc, color
-
-      integer(kind=mpi_address_kind) lb, dp_size
-c      integer lb, dp_size
+      integer nc, color
 
       call start_pes(0)
       total_nodes = num_pes()
