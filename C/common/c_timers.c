@@ -1,8 +1,9 @@
 
-#include "mpi.h"
 #include <sys/time.h>
 #include <unistd.h>
 
+// make static so doesn't pollute shmem_ namespace
+static
 double shmem_time()
 {
   struct timeval tv;
