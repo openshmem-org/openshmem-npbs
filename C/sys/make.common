@@ -25,8 +25,9 @@ COMMON=../common
 ${COMMON}/${RAND}.o: ${COMMON}/${RAND}.f
 	cd ${COMMON}; ${FCOMPILE} ${RAND}.f
 
-${COMMON}/c_randdp.o: ${COMMON}/c_randdp.c
-	cd ${COMMON}; ${CCOMPILE} -o c_randdp.o c_randdp.c
+# generic rand wrapper for C
+${COMMON}/c_rand.o: ${COMMON}/c_rand.c
+	cd ${COMMON}; ${CCOMPILE} -o c_rand.o c_rand.c
 
 ${COMMON}/print_results.o: ${COMMON}/print_results.f
 	cd ${COMMON}; ${FCOMPILE} print_results.f
