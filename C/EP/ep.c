@@ -44,7 +44,7 @@
 
 //#include "type.h"
 #include "npbparams.h"
-//#include "randdp.h"
+#include "randdp.h"
 //#include "c_timers.h"
 //#include "c_print_results.h"
 
@@ -64,7 +64,7 @@ void    timer_clear( int n );
 void    timer_start( int n );
 void    timer_stop( int n );
 double  timer_read( int n );
-double	randlc(double *x1, double *a1);
+// double	randlc(double *x1, double *a1);
 
 void c_print_results( char   *name,
                       char   class,
