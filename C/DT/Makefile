@@ -9,7 +9,8 @@ include ../sys/make.common
 DTPROGRAM  = $(BINDIR)/$(BENCHMARK).$(CLASS)
 
 OBJS = dt.o DGraph.o \
-	${COMMON}/c_print_results.o ${COMMON}/c_timers.o ${COMMON}/c_randdp.o
+	${COMMON}/c_print_results.o ${COMMON}/c_timers.o \
+		${COMMON}/c_rand.o ${COMMON}/$(RAND).o
 
 
 ${PROGRAM}: config ${OBJS}
