@@ -8,8 +8,7 @@ include ../sys/make.common
 
 OBJS = ep.o \
 		${COMMON}/c_print_results.o \
-		${COMMON}/randdp.o \
-		${COMMON}/c_randdp.o \
+		${COMMON}/$(RAND).o ${COMMON}/c_rand.o \
 		${COMMON}/c_timers.o
 
 
