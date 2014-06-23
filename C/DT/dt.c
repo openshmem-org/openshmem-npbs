@@ -853,5 +853,5 @@ int main(int argc,char **argv ){
         	       CFLAGS,
         	       CLINKFLAGS );
     }          
-  return 1;
+  return 0;
 }
