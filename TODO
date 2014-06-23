@@ -5,7 +5,7 @@ Current Repo Status:
 Bench   Lang        Libr    Develop
 CG      Fortran     shmem   Unsuccessful Results
 EP      Fortran     shmem   OK
-EP      C           shmem   CompileError undeclared variables
+EP      C           shmem   Unsuccessful Results
 FT      Fortran     shmem   Unsuccessful Results
 MG      Fortran     shmem   OK
 BT      Fortran     shmem   OK
