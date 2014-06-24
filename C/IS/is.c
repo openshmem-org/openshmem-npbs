@@ -184,6 +184,7 @@
 /*************************************/
 typedef  int  INT_TYPE;
 
+#define MAX(x,y) ((x)>(y)) ? (y) : (x)
 
 /********************/
 /* SHMEM properties:  */
@@ -204,7 +205,9 @@ int      passed_verification;
 
 long pSync[_SHMEM_REDUCE_SYNC_SIZE];
 double pWrk[_SHMEM_REDUCE_MIN_WRKDATA_SIZE];
-int ipWrk[_SHMEM_REDUCE_MIN_WRKDATA_SIZE];
+int ipWrk[MAX((NUM_BUCKETS+TEST_ARRAY_SIZE)/2+1,
+               _SHMEM_REDUCE_MIN_WRKDATA_SIZE)];
+
 /************************************/
 /* These are the three main arrays. */
 /* See SIZE_OF_BUFFERS def above    */
@@ -601,7 +604,6 @@ void rank( int iteration )
 
 /*  Get the bucket size totals for the entire problem. These 
     will be used to determine the redistribution of keys      */
-    //shmem_barrier_all();
     shmem_int_sum_to_all(bucket_size_totals,bucket_size,NUM_BUCKETS+TEST_ARRAY_SIZE,0,0,comm_size,ipWrk,pSync);
 
 #ifdef  TIMING_ENABLED
@@ -902,8 +904,10 @@ main( argc, argv )
     comm_size = _num_pes();
     my_rank = _my_pe();
 
-  for (i = 0; i < _SHMEM_BCAST_SYNC_SIZE; i += 1)
-    pSync[i] = _SHMEM_SYNC_VALUE;
+    for (i = 0; i < _SHMEM_REDUCE_SYNC_SIZE; i += 1)
+      pSync[i] = _SHMEM_SYNC_VALUE;
+
+    shmem_barrier_all();
 
 /*  Initialize the verification arrays if a valid class */
     for( i=0; i<TEST_ARRAY_SIZE; i++ )
