@@ -172,7 +172,6 @@ CC      >           rcond=1.0d-1 )
       parameter( nz = na*(nonzer+1)*(nonzer+1)/num_procs 
      >              + na*(nonzer+2+num_procs/256)/num_proc_cols )
 
-
 			      	
       common / partit_size  / 	 naa, nzz, 
      >                           npcols, nprows,
@@ -228,8 +227,9 @@ CC      >           rcond=1.0d-1 )
       integer            reduce_exch_proc(num_proc_cols)
       integer            reduce_send_starts(num_proc_cols)
       integer            reduce_send_lengths(num_proc_cols)
-      integer            reduce_recv_starts(num_proc_cols)
       integer            reduce_recv_lengths(num_proc_cols)
+      integer,save ::    reduce_recv_starts(num_proc_cols)
+      integer            reduce_rrecv_starts(num_proc_cols)
 
       integer            i, j, k, it,other
 
@@ -339,28 +339,22 @@ c---------------------------------------------------------------------
 c  Set up partition's submatrix info: firstcol, lastcol, firstrow, lastrow
 c---------------------------------------------------------------------
       call setup_submatrix_info( l2npcols,
-     >                           reduce_exch_proc,
-     >                           reduce_send_starts,
-     >                           reduce_send_lengths,
-     >                           reduce_recv_starts,
-     >                           reduce_recv_lengths )
-
-
-
-c---------------------------------------------------------------------
-c  Inialize random number generator
-c---------------------------------------------------------------------
+     >                                 reduce_exch_proc,
+     >                                 reduce_send_starts,
+     >                                 reduce_send_lengths,
+     >                                 reduce_recv_starts,
+     >                                 reduce_recv_lengths,
+     >                                 reduce_rrecv_starts )
       tran    = 314159265.0D0
       amult   = 1220703125.0D0
       zeta    = randlc( tran, amult )
-
+      
 c---------------------------------------------------------------------
 c  Set up partition's sparse random matrix for given class size
 c---------------------------------------------------------------------
       call makea(naa, nzz, a, colidx, rowstr, nonzer,
      >           firstrow, lastrow, firstcol, lastcol, 
      >           rcond, arow, acol, aelt, v, iv, shift)
-
 
 
 c---------------------------------------------------------------------
@@ -385,7 +379,6 @@ c---------------------------------------------------------------------
       enddo
 
       zeta  = 0.0d0
-
 c---------------------------------------------------------------------
 c---->
 c  Do one iteration untimed to init all code and data page tables
@@ -411,7 +404,8 @@ c---------------------------------------------------------------------
      >                    reduce_send_starts,
      >                    reduce_send_lengths,
      >                    reduce_recv_starts,
-     >                    reduce_recv_lengths )
+     >                    reduce_recv_lengths,
+     >                    reduce_rrecv_starts )
 
 c---------------------------------------------------------------------
 c  zeta = shift + 1/(x.z)
@@ -443,9 +437,11 @@ c     >                      i,
 c     >                      mpi_comm_world,
 c     >                      ierr )
 c            call mpi_wait( request, status, ierr )
-            other = reduce_exch_proc(i)
-            call shmem_double_put(norm_temp2,norm_temp1,2, other) 
-            call shmem_barrier_all()
+            
+            call sync_reduce_exch_proc(i, reduce_exch_proc(i))
+            call shmem_double_put(norm_temp2,norm_temp1,2,
+     >                            reduce_exch_proc(i))
+            call sync_reduce_exch_proc(i, reduce_exch_proc(i))
 
             norm_temp1(1) = norm_temp1(1) + norm_temp2(1)
             norm_temp1(2) = norm_temp1(2) + norm_temp2(2)
@@ -453,14 +449,12 @@ c            call mpi_wait( request, status, ierr )
 
          norm_temp1(2) = 1.0d0 / sqrt( norm_temp1(2) )
 
-
 c---------------------------------------------------------------------
 c  Normalize z to obtain x
 c---------------------------------------------------------------------
          do j=1, lastcol-firstcol+1      
             x(j) = norm_temp1(2)*z(j)    
          enddo                           
-
 
       enddo                              ! end of do one iteration untimed
 
@@ -512,8 +506,8 @@ c---------------------------------------------------------------------
      >                    reduce_send_starts,
      >                    reduce_send_lengths,
      >                    reduce_recv_starts,
-     >                    reduce_recv_lengths )
-
+     >                    reduce_recv_lengths,
+     >                    reduce_rrecv_starts )
 
 c---------------------------------------------------------------------
 c  zeta = shift + 1/(x.z)
@@ -527,7 +521,8 @@ c---------------------------------------------------------------------
             norm_temp1(1) = norm_temp1(1) + x(j)*z(j)
             norm_temp1(2) = norm_temp1(2) + z(j)*z(j)
          enddo
-
+         
+         
          do i = 1, l2npcols
 c            call mpi_irecv( norm_temp2,
 c     >                      2, 
@@ -545,9 +540,11 @@ c     >                      i,
 c     >                      mpi_comm_world,
 c     >                      ierr )
 c            call mpi_wait( request, status, ierr )
-            other = reduce_exch_proc(i)
-            call shmem_double_put(norm_temp2,norm_temp1,2, other)
-            call shmem_barrier_all()
+            
+            call sync_reduce_exch_proc(i, reduce_exch_proc(i))
+            call shmem_double_put(norm_temp2,norm_temp1,2,
+     >                            reduce_exch_proc(i))
+            call sync_reduce_exch_proc(i, reduce_exch_proc(i))
 
             norm_temp1(1) = norm_temp1(1) + norm_temp2(1)
             norm_temp1(2) = norm_temp1(2) + norm_temp2(2)
@@ -590,6 +587,7 @@ c     >                 MPI_MAX,
 c     >                 root,
 c     >                 mpi_comm_world,
 c     >                 ierr )
+
       call shmem_real8_max_to_all(tmax,t,1,0,0,nprocs,pwrk,psync)
 
       if( me .eq. root )then
@@ -598,7 +596,6 @@ c     >                 ierr )
 
          epsilon = 1.d-10
          if (class .ne. 'U') then
-
             err = abs( zeta - zeta_verify_value )/zeta_verify_value
             if( err .le. epsilon ) then
                verified = .TRUE.
@@ -651,9 +648,6 @@ c      call mpi_finalize(ierr)
 
 
       end                              ! end main
-
-
-
 
 
 c---------------------------------------------------------------------
@@ -809,8 +803,8 @@ c---------------------------------------------------------------------
      >                                 reduce_send_starts,
      >                                 reduce_send_lengths,
      >                                 reduce_recv_starts,
-     >                                 reduce_recv_lengths )
-     >                                 
+     >                                 reduce_recv_lengths,
+     >                                 reduce_rrecv_starts )                                 
 c---------------------------------------------------------------------
 c---------------------------------------------------------------------
 
@@ -848,6 +842,7 @@ c---------------------------------------------------------------------
       integer   reduce_send_lengths(*)
       integer   reduce_recv_starts(*)
       integer   reduce_recv_lengths(*)
+      integer   reduce_rrecv_starts(*)
 
       integer   i, j
       integer   div_factor
@@ -1006,7 +1001,16 @@ c---------------------------------------------------------------------
 
 
       exch_recv_length = lastcol - firstcol + 1
-
+c---------------------------------------------------------------------
+c  Obtain reduce_recv_starts from exchange partners
+c---------------------------------------------------------------------
+      call shmem_barrier_all()
+      do i = 1, l2npcols
+          call shmem_integer_get(reduce_rrecv_starts(i),
+     >                           reduce_recv_starts(i),
+     >                           1,
+     >                           reduce_exch_proc(i) )
+      end do
 
       return
       end
@@ -1031,7 +1035,8 @@ c---------------------------------------------------------------------
      >                       reduce_send_starts,
      >                       reduce_send_lengths,
      >                       reduce_recv_starts,
-     >                       reduce_recv_lengths )
+     >                       reduce_recv_lengths,
+     >                       reduce_rrecv_starts )
 c---------------------------------------------------------------------
 c---------------------------------------------------------------------
 
@@ -1088,8 +1093,9 @@ c---------------------------------------------------------------------
       integer   reduce_send_lengths(l2npcols)
       integer   reduce_recv_starts(l2npcols)
       integer   reduce_recv_lengths(l2npcols)
+      integer   reduce_rrecv_starts(l2npcols)
 
-      integer   i, j, k, ierr, other
+      integer   i, j, k, ierr
       integer   cgit, cgitmax
 
       double precision  sum, rho0, alpha, beta, rnorm
@@ -1123,11 +1129,13 @@ c---------------------------------------------------------------------
          sum = sum + r(j)*r(j)
       enddo
 
+
 c---------------------------------------------------------------------
 c  Exchange and sum with procs identified in reduce_exch_proc
 c  (This is equivalent to mpi_allreduce.)
 c  Sum the partial sums of rho, leaving rho on all processors
 c---------------------------------------------------------------------
+
       do i = 1, l2npcols
 c         call mpi_irecv( rho,
 c     >                   1,
@@ -1145,9 +1153,10 @@ c     >                   i,
 c     >                   mpi_comm_world,
 c     >                   ierr )
 c         call mpi_wait( request, status, ierr )
-         other = reduce_exch_proc(i)
-         call shmem_double_put(rho,sum,1, other)
-         call shmem_barrier_all()
+
+         call sync_reduce_exch_proc(i, reduce_exch_proc(i))
+         call shmem_double_put(rho,sum,1,reduce_exch_proc(i))
+         call sync_reduce_exch_proc(i, reduce_exch_proc(i))
 
          sum = sum + rho
       enddo
@@ -1179,6 +1188,7 @@ c---------------------------------------------------------------------
 c  Sum the partition submatrix-vec A.p's across rows
 c  Exchange and sum piece of w with procs identified in reduce_exch_proc
 c---------------------------------------------------------------------
+         
          do i = l2npcols, 1, -1
 c            call mpi_irecv( q(reduce_recv_starts(i)),
 c     >                      reduce_recv_lengths(i),
@@ -1196,11 +1206,14 @@ c     >                      i,
 c     >                      mpi_comm_world,
 c     >                      ierr )
 c            call mpi_wait( request, status, ierr )
-            call shmem_double_put(q(reduce_recv_starts(i)),
+            
+            call sync_reduce_exch_proc(i, reduce_exch_proc(i))
+            call shmem_double_put(q(reduce_rrecv_starts(i)),
      >                            w(reduce_send_starts(i)), 
      >                            reduce_send_lengths(i), 
      >                            reduce_exch_proc(i))
-            call shmem_barrier_all()
+           
+            call sync_reduce_exch_proc(i, reduce_exch_proc(i))
 
             do j=send_start,send_start + reduce_recv_lengths(i) - 1
                w(j) = w(j) + q(j)
@@ -1229,11 +1242,14 @@ c     >                      1,
 c     >                      mpi_comm_world,
 c     >                      ierr )
 c            call mpi_wait( request, status, ierr )
+            call sync_exch_proc(exch_proc)
+c            call shmem_barrier_all()
             call shmem_double_put(q,
      >                            w(send_start),
      >                            send_len,
      >                            exch_proc)
-            call shmem_barrier_all()
+            call sync_exch_proc(exch_proc)
+c            call shmem_barrier_all()
 
          else
             do j=1,exch_recv_length
@@ -1261,6 +1277,7 @@ c---------------------------------------------------------------------
 c---------------------------------------------------------------------
 c  Obtain d with a sum-reduce
 c---------------------------------------------------------------------
+         
          do i = 1, l2npcols
 c            call mpi_irecv( d,
 c     >                      1,
@@ -1278,11 +1295,12 @@ c     >                      i,
 c     >                      mpi_comm_world,
 c     >                      ierr )
 c            call mpi_wait( request, status, ierr )
+            call sync_reduce_exch_proc(i, reduce_exch_proc(i))
             call shmem_double_put(d,
      >                            sum,
      >                            1,
      >                            reduce_exch_proc(i))
-            call shmem_barrier_all()
+            call sync_reduce_exch_proc(i, reduce_exch_proc(i))
 
             sum = sum + d
          enddo
@@ -1320,6 +1338,7 @@ c---------------------------------------------------------------------
 c---------------------------------------------------------------------
 c  Obtain rho with a sum-reduce
 c---------------------------------------------------------------------
+         
          do i = 1, l2npcols
 c            call mpi_irecv( rho,
 c     >                      1,
@@ -1337,11 +1356,12 @@ c     >                      i,
 c     >                      mpi_comm_world,
 c     >                      ierr )
 c            call mpi_wait( request, status, ierr )
+            call sync_reduce_exch_proc(i, reduce_exch_proc(i))
             call shmem_double_put(rho,
      >                            sum,
      >                            1,
      >                            reduce_exch_proc(i))
-            call shmem_barrier_all()
+            call sync_reduce_exch_proc(i, reduce_exch_proc(i))
 
             sum = sum + rho
          enddo
@@ -1383,6 +1403,7 @@ c---------------------------------------------------------------------
 c---------------------------------------------------------------------
 c  Sum the partition submatrix-vec A.z's across rows
 c---------------------------------------------------------------------
+      
       do i = l2npcols, 1, -1
 c         call mpi_irecv( r(reduce_recv_starts(i)),
 c     >                   reduce_recv_lengths(i),
@@ -1400,11 +1421,13 @@ c     >                   i,
 c     >                   mpi_comm_world,
 c     >                   ierr )
 c         call mpi_wait( request, status, ierr )
-           call shmem_double_put( r(reduce_recv_starts(i)),
+           call sync_reduce_exch_proc(i, reduce_exch_proc(i))
+           call shmem_double_put( r(reduce_rrecv_starts(i)),
      >                            w(reduce_send_starts(i)),
      >                            reduce_send_lengths(i),
      >                            reduce_exch_proc(i))
-           call shmem_barrier_all()
+          
+           call sync_reduce_exch_proc(i, reduce_exch_proc(i))
 
          do j=send_start,send_start + reduce_recv_lengths(i) - 1
             w(j) = w(j) + r(j)
@@ -1433,11 +1456,15 @@ c     >                   1,
 c     >                   mpi_comm_world,
 c     >                   ierr )
 c         call mpi_wait( request, status, ierr )
+           
+           call sync_exch_proc(exch_proc)
+c           call shmem_barrier_all()
            call shmem_double_put(r,
      >                            w(send_start),
      >                            send_len,
      >                            exch_proc)
-           call shmem_barrier_all()
+c           call shmem_barrier_all()
+           call sync_exch_proc(exch_proc)
 
       else
          do j=1,exch_recv_length
@@ -1458,6 +1485,7 @@ c---------------------------------------------------------------------
 c---------------------------------------------------------------------
 c  Obtain d with a sum-reduce
 c---------------------------------------------------------------------
+
       do i = 1, l2npcols
 c         call mpi_irecv( d,
 c     >                   1,
@@ -1475,19 +1503,19 @@ c     >                   i,
 c     >                   mpi_comm_world,
 c     >                   ierr )
 c         call mpi_wait( request, status, ierr )
+         call sync_reduce_exch_proc(i, reduce_exch_proc(i))
          call shmem_double_put(d,
      >                         sum,
      >                         1,
      >                         reduce_exch_proc(i))
-         call shmem_barrier_all()
+         call sync_reduce_exch_proc(i, reduce_exch_proc(i))
 
          sum = sum + d
       enddo
       d = sum
 
 
-      if( me .eq. root ) rnorm = sqrt( d )
-
+      if( me .eq. root )  rnorm = sqrt( d )
 
 
       return
@@ -1557,10 +1585,13 @@ c---------------------------------------------------------------------
       do i = 1, n
 	   iv(n+i) = 0
       enddo
+      
       do iouter = 1, n
          nzv = nonzer
          call sprnvc( n, nzv, v, colidx, iv(1), iv(n+1) )
+         
          call vecset( n, v, colidx, nzv, iouter, .5D0 )
+         
          do ivelt = 1, nzv
               jcol = colidx(ivelt)
               if (jcol.ge.firstcol .and. jcol.le.lastcol) then
@@ -1579,7 +1610,7 @@ c---------------------------------------------------------------------
          enddo
          size = size * ratio
       enddo
-
+     
 
 c---------------------------------------------------------------------
 c       ... add the identity * rcond to the generated matrix to bound
@@ -1595,7 +1626,7 @@ c---------------------------------------------------------------------
 	      aelt(nnza) = rcond - shift
 	   endif
         enddo
-
+      
 
 c---------------------------------------------------------------------
 c       ... make the sparse matrix from list of elements with duplicates
@@ -1781,6 +1812,7 @@ c---------------------------------------------------------------------
         nzv = 0
         nzrow = 0
         nn1 = 1
+        
  50     continue
           nn1 = 2 * nn1
           if (nn1 .lt. n) goto 50
@@ -1792,14 +1824,13 @@ c---------------------------------------------------------------------
 100     continue
         if (nzv .ge. nz) goto 110
          vecelt = randlc( tran, amult )
-
 c---------------------------------------------------------------------
 c   generate an integer between 1 and n in a portable manner
 c---------------------------------------------------------------------
          vecloc = randlc(tran, amult)
          i = icnvrt(vecloc, nn1) + 1
          if (i .gt. n) goto 100
-
+         
 c---------------------------------------------------------------------
 c  was this integer generated already?
 c---------------------------------------------------------------------
@@ -1811,6 +1842,7 @@ c---------------------------------------------------------------------
             v(nzv) = vecelt
             iv(nzv) = i
          endif
+        
          goto 100
 110      continue
       do ii = 1, nzrow
@@ -1836,7 +1868,6 @@ c---------------------------------------------------------------------
 c    scale a double precision number x in (0,1) by a power of 2 and chop it
 c---------------------------------------------------------------------
       icnvrt = int(ipwr2 * x)
-
       return
       end
 c-------end   of icnvrt-----------------------------
@@ -1874,4 +1905,69 @@ c---------------------------------------------------------------------
       return
       end
 c-------end   of vecset-----------------------------
+
+c---------------------------------------------------------------------
+c---------------------------------------------------------------------
+      subroutine sync_reduce_exch_proc(i, proc)
+c---------------------------------------------------------------------
+          implicit none
+
+          include 'mpinpb.h'
+          include 'npbparams.h'
+
+          integer :: i
+          integer :: proc
+          integer, save :: sync_flags(num_proc_cols)
+          integer, save :: local_count(num_proc_cols)
+
+c---------------------------------------------------------------------
+c increment sync_flags(i)
+c---------------------------------------------------------------------
+
+          call shmem_fence()
+          call shmem_int4_inc(sync_flags(i), proc)
+
+c---------------------------------------------------------------------
+c wait for increment from partner
+c---------------------------------------------------------------------
+
+          call shmem_int4_wait(sync_flags(i), 0)
+          call shmem_int4_add(sync_flags(i), -1, me)
+          call shmem_fence()
+
+      return
+      end
+c-------end   of sync_reduce_exch_proc-----------------------------
+
+c---------------------------------------------------------------------
+c---------------------------------------------------------------------
+      subroutine sync_exch_proc(proc)
+c---------------------------------------------------------------------
+          implicit none
+
+          include 'mpinpb.h'
+          include 'npbparams.h'
+
+          integer :: i
+          integer :: proc
+          integer*4, save :: sync_flag
+
+c---------------------------------------------------------------------
+c increment sync_flags(i)
+c---------------------------------------------------------------------
+
+          call shmem_fence()
+          call shmem_int4_inc(sync_flag, proc)
+
+c---------------------------------------------------------------------
+c wait for increment from partner
+c---------------------------------------------------------------------
+
+          call shmem_int4_wait(sync_flag, 0)
+          call shmem_int4_add(sync_flag, -1, me)
+          call shmem_fence()
+
+      return
+      end
+c-------end   of sync_exch_proc-----------------------------
 
