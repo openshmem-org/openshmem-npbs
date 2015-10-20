@@ -1666,7 +1666,7 @@ c       the rowstr pointers are defined for nrows = lastrow-firstrow+1 values
 c---------------------------------------------------------------------
       integer            nzloc(n), nrows
       double precision   x(n)
-      logical            mark(n)
+      integer            mark(n)
 
 c---------------------------------------------------
 c       generate a sparse matrix from a list of
@@ -1686,7 +1686,7 @@ c     ...count the number of triples in each row
 c---------------------------------------------------------------------
       do j = 1, n
          rowstr(j) = 0
-         mark(j) = .false.
+         mark(j) = 0
       enddo
       rowstr(n+1) = 0
 
@@ -1734,7 +1734,7 @@ c---------------------------------------------------------------------
       nza = 0
       do i = 1, n
           x(i)    = 0.0
-          mark(i) = .false.
+          mark(i) = 0
       enddo
 
       jajp1 = rowstr(1)
@@ -1747,8 +1747,8 @@ c---------------------------------------------------------------------
          do k = jajp1 , rowstr(j+1)-1
             i = colidx(k)
             x(i) = x(i) + a(k)
-            if ( (.not. mark(i)) .and. (x(i) .ne. 0.D0)) then
-             mark(i) = .true.
+            if ( (mark(i) .ne. 1.D0) .and. (x(i) .ne. 0.D0)) then
+             mark(i) = 1
              nzrow = nzrow + 1
              nzloc(nzrow) = i
             endif
@@ -1759,7 +1759,7 @@ c          ... extract the nonzeros of this row
 c---------------------------------------------------------------------
          do k = 1, nzrow
             i = nzloc(k)
-            mark(i) = .false.
+            mark(i) = 0
             xi = x(i)
             x(i) = 0.D0
             if (xi .ne. 0.D0) then
