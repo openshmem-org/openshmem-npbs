@@ -1747,7 +1747,7 @@ c---------------------------------------------------------------------
          do k = jajp1 , rowstr(j+1)-1
             i = colidx(k)
             x(i) = x(i) + a(k)
-            if ( (mark(i) .ne. 1.D0) .and. (x(i) .ne. 0.D0)) then
+            if ( (mark(i) .ne. 1) .and. (x(i) .ne. 0.D0)) then
              mark(i) = 1
              nzrow = nzrow + 1
              nzloc(nzrow) = i
